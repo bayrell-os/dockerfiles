@@ -1,1 +1,1 @@
-docker build ./ -t centos7_repos
+docker build ./ -t bayrell/centos7_repos:latest
