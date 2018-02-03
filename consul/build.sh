@@ -1,0 +1,1 @@
+docker build ./ -t bayrell/consul:1.0.3

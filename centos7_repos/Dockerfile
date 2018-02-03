@@ -13,7 +13,6 @@ RUN cd ~; \
     rpm -Uvh remi-release-7.rpm; \
     rm -f remi-release-7.rpm; \
     echo "[4] Clean yum cache"; \
-    yum update -y; \
     yum clean all; \
-    rm -rv /var/cache/yum
+    rm -rf /var/cache/yum
 
