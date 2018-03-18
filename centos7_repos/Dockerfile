@@ -7,7 +7,7 @@ RUN cd ~; \
     rpm --import https://rpms.remirepo.net/RPM-GPG-KEY-remi; \
     echo "[2] Install epel repository"; \
     yum update -y;\
-    yum install epel-release wget -y; \
+    yum install epel-release wget deltarpm -y; \
     echo "[3] Install remi repository"; \
     wget http://rpms.famillecollet.com/enterprise/remi-release-7.rpm; \
     rpm -Uvh remi-release-7.rpm; \
