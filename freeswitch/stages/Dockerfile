@@ -9,9 +9,9 @@ RUN cd ~; \
 	
 	echo "[1] Install common programs"; \
 	yum update -y; \
-	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop epel-release vim openssl; \
+	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim openssl; \
 	yum install -y ghostscript libtiff-devel libtiff-tools at less; \
-	yum install -y memcached curl gdb; \
+	yum install -y memcached curl gdb man; \
 	
 	
 	
@@ -31,6 +31,7 @@ RUN cd ~; \
 	find /var/www/fusionpbx -type f -exec chmod 664 {} +; \
 	mv /etc/freeswitch /etc/freeswitch.orig; \
 	mkdir /etc/freeswitch; \
+	mkdir -p /var/run/freeswitch; \
 	cp -R /var/www/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	
 	
@@ -39,6 +40,7 @@ RUN cd ~; \
 	chown -R freeswitch:daemon /usr/share/freeswitch; \
 	chown -R freeswitch:daemon /var/log/freeswitch; \
 	chown -R freeswitch:daemon /var/run/freeswitch; \
+	chown -R freeswitch:daemon /var/www/fusionpbx; \
 	
 	
 	
@@ -51,20 +53,24 @@ RUN cd ~; \
 	
 RUN cd ~; \	
 	
-	echo "[5] Install PHP 7.1"; \
-	yum install -y php71 php71-php-fpm php71-php-gd php71-php-pgsql php71-php-odbc php71-php-imap php71-php-mcrypt php71-php-opcache php71-php-common php71-php-pdo php71-php-soap php71-php-xml php71-php-xmlrpc php71-php-cli; \	
-	sed -i "s#;date.timezone =#date.timezone = Asia/Almaty#g" /etc/opt/remi/php71/php.ini; \
-	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/opt/remi/php71/php.ini; \
-	sed -i "s|listen = 127.0.0.1:9000|listen = /var/run/php-fpm/php-fpm.sock|g" /etc/opt/remi/php71/php-fpm.d/www.conf; \
-	sed -i 's/;listen.owner = nobody/listen.owner = nobody/g' /etc/opt/remi/php71/php-fpm.d/www.conf; \
-	sed -i 's/;listen.group = nobody/listen.group = nobody/g' /etc/opt/remi/php71/php-fpm.d/www.conf; \
-	sed -i 's/group = apache/group = daemon/g' /etc/opt/remi/php71/php-fpm.d/www.conf; \
-	mkdir -p /var/opt/remi/php71/lib/php/session; \
-	chmod -Rf 770 /var/opt/remi/php71/lib/php/session; \
-	ln -s /usr/bin/php71 /usr/bin/php; \
-	ln -s /usr/bin/php71-cli /usr/bin/php-cli; \
-	ln -s /usr/bin/php71-cgi /usr/bin/php-cgi; \
-	
+	echo "[5] Install PHP 5.6"; \
+	yum install -y php56 php56-php-fpm php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli; \	
+	sed -i "s#;date.timezone =#date.timezone = Asia/Almaty#g" /etc/opt/remi/php56/php.ini; \
+	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/opt/remi/php56/php.ini; \
+	sed -i "s|listen = 127.0.0.1:9000|listen = 127.0.0.1:9056|g" /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.owner = nobody/listen.owner = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.group = nobody/listen.group = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/user = apache/user = freeswitch/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/group = apache/group = daemon/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's#php_value\[session.save_path\].*#php_value[session.save_path] = /var/run/session#g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	mkdir -p /var/run/session; \
+	mkdir -p /var/run/php-fpm; \
+	chmod -R 770 /var/run/session; \
+	chown freeswitch:daemon /var/run/session; \
+	ln -s /usr/bin/php56 /usr/bin/php; \
+	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
+	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
+	usermod -a -G daemon freeswitch; \
 	
 	
 	echo "[6] Install NGINX"; \	
@@ -79,27 +85,24 @@ RUN cd ~; \
 	
 	echo "[7] Install Postgre SQL"; \	
 	rpm -Uvh /src/install/download/pgdg-centos94-9.4-3.noarch.rpm; \
-	yum -y install postgresql94-server postgresql94-contrib postgresql94; \
-	
-	
-	echo "[8] Clean yum cache"; \
-	yum clean all; 	
+	yum -y install postgresql94-server postgresql94-contrib postgresql94; 
 	
 	
 	
 RUN cd ~; \	
 	
-	echo "[9] Install data"; \
+	echo "[9] Create folders"; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
-	mv -rf /etc/freeswitch /src/data; \
+	mkdir -p /var/run/dbus; \
+	mv /etc/freeswitch /src/data; \
 	rm -rf /var/log/anaconda/*; \
 	mv /var/log /src/data; \
 	mv /var/lib/pgsql /src/data; \
 	
 	ln -s /data/freeswitch /etc/freeswitch; \
 	ln -s /data/log /var/log; \
-	ln -s /data/pgsql /var/lib/pgsql; \
+	ln -s /data/pgsql /var/lib/pgsql; \	
 	
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 	cp -f /src/install/run.sh /root/run.sh; \

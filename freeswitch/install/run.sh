@@ -18,8 +18,8 @@ function install {
 	yes | cp -rfT /src/data/pgsql /data/pgsql
 	
 	chown -R freeswitch:daemon /data/freeswitch
+	chown -R freeswitch:daemon /var/log/freeswitch
 	chown -R postgres:postgres /data/pgsql
-	
 	
 	echo "Install Database"
 	sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data
