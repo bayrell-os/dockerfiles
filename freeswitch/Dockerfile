@@ -1,7 +1,7 @@
 FROM bayrell/centos7_repos:latest
 
 
-ADD data /src/install/
+ADD install /src/install/
 ADD fusionpbx /var/www/fusionpbx/
 
 
@@ -29,7 +29,6 @@ RUN cd ~; \
 	yum install -y lame; \
 	find /var/www/fusionpbx -type d -exec chmod 775 {} +; \
 	find /var/www/fusionpbx -type f -exec chmod 664 {} +; \
-	cd ~; \
 	mv /etc/freeswitch /etc/freeswitch.orig; \
 	mkdir /etc/freeswitch; \
 	cp -R /var/www/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
@@ -45,7 +44,7 @@ RUN cd ~; \
 	
 	echo "[4] Install sngrep"; \
 	rpm --import /src/install/download/IRONTEC; \
-	cp /src/install/irontec.repo > /etc/yum.repos.d/irontec.repo
+	cp -fv /src/install/irontec.repo /etc/yum.repos.d/irontec.repo; \
 	yum install -y sngrep;
 	
 	
@@ -71,6 +70,7 @@ RUN cd ~; \
 	echo "[6] Install NGINX"; \	
 	yum install -y nginx; \
 	cp /src/install/nginx-fusionpbx.conf /etc/nginx/conf.d/fusionpbx.conf; \
+	rm -f /etc/nginx/nginx.conf; \
 	cp -f /src/install/nginx.conf /etc/nginx/nginx.conf; 
 	
 	
@@ -80,18 +80,14 @@ RUN cd ~; \
 	echo "[7] Install Postgre SQL"; \	
 	rpm -Uvh /src/install/download/pgdg-centos94-9.4-3.noarch.rpm; \
 	yum -y install postgresql94-server postgresql94-contrib postgresql94; \
-	sudo -u postgres ./initdb -D /var/lib/pgsql/9.4/data; 
-	
 	
 	
 	echo "[8] Clean yum cache"; \
-	yum clean all; \
-	rm -rf /var/cache/yum
-	
+	yum clean all; 	
 	
 	
 #RUN cd ~; \
-#	
+#	sudo -u postgres ./initdb -D /var/lib/pgsql/9.4/data; \
 #	echo "[8] Run supervisor"; \
 #	mkdir -p /var/run/dbus; \
 #	cp -f /src/install/supervisor/* /etc/supervisord.d; \
@@ -109,4 +105,6 @@ RUN cd ~; \
 #	
 #	
 #CMD ["/usr/bin/supervisord -c /etc/supervisord.conf"]
-
+	
+	
+	

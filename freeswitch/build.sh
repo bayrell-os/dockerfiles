@@ -23,10 +23,15 @@ case "$1" in
 	;;
 	
   docker)
-    docker build ./ -t bayrell/tutorial01_php71
+    docker build ./ -t bayrell/freeswitch
     cd ..
     ;;
-
+  
+  run)
+    $SCRIPT download
+    $SCRIPT docker
+    ;;
+  
   *)
     echo "Usage: $0 {download|docker}"
     RETVAL=1
