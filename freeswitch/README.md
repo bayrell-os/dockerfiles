@@ -15,7 +15,7 @@ docker volume create freeswitch_data
 
 Run container
 ```
-docker run -it -d --name freeswitch -v freeswitch_data:/data -p 80:80 bayrell/freeswitch
+docker run -it -d --name freeswitch -v freeswitch_data:/data -p 10080:80 bayrell/freeswitch
 ```
 
 

@@ -34,7 +34,7 @@ RUN cd ~; \
 	mkdir -p /var/run/freeswitch; \
 	cp -R /var/www/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	
-	
+	usermod -a -G daemon freeswitch; \
 	chown -R freeswitch:daemon /etc/freeswitch; \
 	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /usr/share/freeswitch; \
@@ -70,7 +70,6 @@ RUN cd ~; \
 	ln -s /usr/bin/php56 /usr/bin/php; \
 	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
 	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
-	usermod -a -G daemon freeswitch; \
 	
 	
 	echo "[6] Install NGINX"; \	
@@ -91,7 +90,7 @@ RUN cd ~; \
 	
 RUN cd ~; \	
 	
-	echo "[9] Create folders"; \
+	echo "[8] Create folders"; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
 	mkdir -p /var/run/dbus; \

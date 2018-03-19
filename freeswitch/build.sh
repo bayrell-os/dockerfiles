@@ -18,7 +18,7 @@ case "$1" in
 	wget https://download.postgresql.org/pub/repos/yum/9.4/redhat/rhel-7-x86_64/pgdg-centos94-9.4-3.noarch.rpm -O "install/download/pgdg-centos94-9.4-3.noarch.rpm"
 	
 	git clone https://github.com/fusionpbx/fusionpbx.git
-	cd fusionpbx && git checkout 4.2.2 && rm -rf .git && cd ..
+	cd fusionpbx && git checkout 4.2.2 && cd ..
 	
 	;;
 
@@ -37,13 +37,13 @@ case "$1" in
 	cd ..
 	;;
   
-  run)
+  all)
 	$SCRIPT download
 	$SCRIPT docker
 	;;
   
   *)
-    echo "Usage: $0 {download|docker}"
+    echo "Usage: $0 {download|docker|all}"
     RETVAL=1
 
 esac
