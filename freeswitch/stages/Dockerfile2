@@ -1,0 +1,27 @@
+FROM bayrell/freeswitch:stage1
+
+
+COPY install/run.sh /root/run.sh
+COPY install/supervisor/postgresql.ini /src/install/supervisor/postgresql.ini
+
+
+RUN cd ~; \	
+	
+	mkdir -p /data; \
+	mkdir -p /src/data; \
+	mv /etc/freeswitch /src/data; \
+	rm -rf /var/log/anaconda/*; \
+	mv /var/log /src/data; \
+	mv /var/lib/pgsql /src/data; \
+	
+	ln -s /data/freeswitch /etc/freeswitch; \
+	ln -s /data/log /var/log; \
+	ln -s /data/pgsql /var/lib/pgsql; \
+	
+	chmod +x /root/run.sh; \
+	cp -f /src/install/supervisor/* /etc/supervisord.d; 
+	
+	
+	
+VOLUME ["/data"]
+CMD ["/root/run.sh"]

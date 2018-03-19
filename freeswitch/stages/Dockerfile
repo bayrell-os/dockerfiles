@@ -86,25 +86,26 @@ RUN cd ~; \
 	yum clean all; 	
 	
 	
-#RUN cd ~; \
-#	sudo -u postgres ./initdb -D /var/lib/pgsql/9.4/data; \
-#	echo "[8] Run supervisor"; \
-#	mkdir -p /var/run/dbus; \
-#	cp -f /src/install/supervisor/* /etc/supervisord.d; \
-#	/usr/bin/supervisord -c /etc/supervisord.conf; \
-#	
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE DATABASE fusionpbx"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE DATABASE freeswitch"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE ROLE fusionpbx WITH SUPERUSER LOGIN PASSWORD 'pa$$word'"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE ROLE freeswitch WITH SUPERUSER LOGIN PASSWORD 'pa$$word'"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE fusionpbx to fusionpbx"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to fusionpbx"; \
-#	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch"; \
-#	
-#	
-#	
-#	
-#CMD ["/usr/bin/supervisord -c /etc/supervisord.conf"]
+	
+RUN cd ~; \	
+	
+	echo "[9] Install data"; \
+	mkdir -p /data; \
+	mkdir -p /src/data; \
+	mv -rf /etc/freeswitch /src/data; \
+	rm -rf /var/log/anaconda/*; \
+	mv /var/log /src/data; \
+	mv /var/lib/pgsql /src/data; \
+	
+	ln -s /data/freeswitch /etc/freeswitch; \
+	ln -s /data/log /var/log; \
+	ln -s /data/pgsql /var/lib/pgsql; \
+	
+	cp -f /src/install/supervisor/* /etc/supervisord.d; \
+	cp -f /src/install/run.sh /root/run.sh; \
+	chmod +x /root/run.sh;
 	
 	
 	
+VOLUME ["/data"]
+CMD ["/root/run.sh"]
