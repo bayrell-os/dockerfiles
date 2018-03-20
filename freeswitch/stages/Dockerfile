@@ -38,8 +38,9 @@ RUN cd ~; \
 	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /var/log/freeswitch; \
 	chown -R freeswitch:daemon /var/run/freeswitch; \
-	
-	
+	chown -R freeswitch:daemon /src/fusionpbx; \
+	find /src/fusionpbx -type d -exec chmod 775 {} +; \
+	find /src/fusionpbx -type f -exec chmod 664 {} +; \
 	
 	echo "[4] Install sngrep"; \
 	rpm --import /src/install/download/IRONTEC; \
