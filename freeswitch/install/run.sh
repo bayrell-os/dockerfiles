@@ -13,13 +13,18 @@ function install {
 	
 	mkdir -p /var/run/dbus
 	
+	yes | cp -rfT /src/fusionpbx /data/fusionpbx
 	yes | cp -rfT /src/data/freeswitch /data/freeswitch
 	yes | cp -rfT /src/data/log /data/log
 	yes | cp -rfT /src/data/pgsql /data/pgsql
 	
 	chown -R freeswitch:daemon /data/freeswitch
 	chown -R freeswitch:daemon /var/log/freeswitch
+	chown -R freeswitch:daemon /var/www/fusionpbx
 	chown -R postgres:postgres /data/pgsql
+	
+	find /var/www/fusionpbx -type d -exec chmod 775 {} +
+	find /var/www/fusionpbx -type f -exec chmod 664 {} +
 	
 	echo "Install Database"
 	sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data

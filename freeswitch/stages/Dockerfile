@@ -2,7 +2,7 @@ FROM bayrell/centos7_repos:latest
 
 
 ADD install /src/install/
-ADD fusionpbx /var/www/fusionpbx/
+ADD fusionpbx /src/fusionpbx/
 
 
 RUN cd ~; \
@@ -27,20 +27,17 @@ RUN cd ~; \
 	echo "[3] Install Fusion PBX"; \
 	rpm -Uvh /src/install/download/cert-forensics-tools-release-el7.rpm; \
 	yum install -y lame; \
-	find /var/www/fusionpbx -type d -exec chmod 775 {} +; \
-	find /var/www/fusionpbx -type f -exec chmod 664 {} +; \
 	mv /etc/freeswitch /etc/freeswitch.orig; \
 	mkdir /etc/freeswitch; \
 	mkdir -p /var/run/freeswitch; \
-	cp -R /var/www/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
+	cp -R /src/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	
 	usermod -a -G daemon freeswitch; \
 	chown -R freeswitch:daemon /etc/freeswitch; \
-	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /usr/share/freeswitch; \
+	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /var/log/freeswitch; \
 	chown -R freeswitch:daemon /var/run/freeswitch; \
-	chown -R freeswitch:daemon /var/www/fusionpbx; \
 	
 	
 	
@@ -93,6 +90,7 @@ RUN cd ~; \
 	echo "[8] Create folders"; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
+	mkdir -p /var/www; \
 	mkdir -p /var/run/dbus; \
 	mv /etc/freeswitch /src/data; \
 	rm -rf /var/log/anaconda/*; \
@@ -100,6 +98,7 @@ RUN cd ~; \
 	mv /var/lib/pgsql /src/data; \
 	
 	ln -s /data/freeswitch /etc/freeswitch; \
+	ln -s /data/fusionpbx /var/www/fusionpbx; \
 	ln -s /data/log /var/log; \
 	ln -s /data/pgsql /var/lib/pgsql; \	
 	
