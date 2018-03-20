@@ -19,7 +19,8 @@ docker run -it -d --name freeswitch -v freeswitch_data:/data -p 10080:80 bayrell
 ```
 
 
-*Default PostgreSQL settings:*
+**Default PostgreSQL settings:**
+
 Host: locahost
 
 User: fusionpbx
