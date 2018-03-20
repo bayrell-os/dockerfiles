@@ -36,10 +36,10 @@ RUN cd ~; \
 	
 	
 	useradd -m asterisk; \
-	chown asterisk.asterisk /var/run/asterisk; \
-	chown -R asterisk.asterisk /etc/asterisk; \
-	chown -R asterisk.asterisk /var/{lib,log,spool}/asterisk; \
-	chown -R asterisk.asterisk /usr/lib64/asterisk; \
+	chown asterisk:asterisk /var/run/asterisk; \
+	chown -R asterisk:asterisk /etc/asterisk; \
+	chown -R asterisk:asterisk /var/{lib,log,spool}/asterisk; \
+	chown -R asterisk:asterisk /usr/lib64/asterisk; \
 	
 	
 	rm -rf /src/tmp/*; 

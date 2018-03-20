@@ -85,34 +85,3 @@ RUN cd ~; \
 	yum -y install postgresql94-server postgresql94-contrib postgresql94; 
 	
 	
-	
-RUN cd ~; \	
-	
-	echo "[8] Create folders"; \
-	mkdir -p /data; \
-	mkdir -p /src/data/etc; \
-	mkdir -p /src/data/lib; \
-	mkdir -p /var/www; \
-	mkdir -p /var/run/dbus; \
-	
-	rm -rf /var/log/anaconda/*; \
-	mv -T /etc/freeswitch /src/data/etc; \
-	mv -T /var/lib/freeswitch /src/data/lib; \
-	mv /var/log /src/data; \
-	mv /var/lib/pgsql /src/data; \
-	
-	ln -s /data/etc /etc/freeswitch; \
-	ln -s /data/lib /var/lib/freeswitch; \
-	ln -s /data/fusionpbx /var/www/fusionpbx; \
-	ln -s /data/log /var/log; \
-	ln -s /data/pgsql /var/lib/pgsql; \	
-	
-	cp -f /src/install/supervisor/* /etc/supervisord.d; \
-	cp -f /src/install/run.sh /root/run.sh; \
-	chmod +x /root/run.sh;
-	
-	
-	
-VOLUME ["/data"]
-CMD ["/root/run.sh"]
-	

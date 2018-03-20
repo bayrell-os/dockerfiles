@@ -27,13 +27,13 @@ case "$1" in
 	cd ..
 	;;
 
-  stage1)
-	docker build ./ -t bayrell/freeswitch:stage1 --file stages/Dockerfile1
+  stage0)
+	docker build ./ -t bayrell/freeswitch:stage0 --file stages/Dockerfile0
 	cd ..
 	;;
   
-  stage2)
-	docker build ./ -t bayrell/freeswitch:stage2 --file stages/Dockerfile2
+  stage1)
+	docker build ./ -t bayrell/freeswitch:stage1 --file stages/Dockerfile1
 	cd ..
 	;;
   

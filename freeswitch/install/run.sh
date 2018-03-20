@@ -13,12 +13,14 @@ function install {
 	
 	mkdir -p /var/run/dbus
 	
-	yes | cp -rfT /src/fusionpbx /data/fusionpbx
-	yes | cp -rfT /src/data/freeswitch /data/freeswitch
+	yes | cp -rfT /src/data/etc /data/etc
+	yes | cp -rfT /src/data/lib /data/lib
 	yes | cp -rfT /src/data/log /data/log
 	yes | cp -rfT /src/data/pgsql /data/pgsql
+	yes | cp -rfT /src/fusionpbx /data/fusionpbx
 	
-	chown -R freeswitch:daemon /data/freeswitch
+	chown -R freeswitch:daemon /data/etc
+	chown -R freeswitch:daemon /data/lib
 	chown -R freeswitch:daemon /var/log/freeswitch
 	chown -R freeswitch:daemon /var/www/fusionpbx
 	chown -R freeswitch:daemon /data/fusionpbx
