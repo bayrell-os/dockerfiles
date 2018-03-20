@@ -1,56 +1,13 @@
 FROM bayrell/freeswitch:stage1
 
-
-COPY install/run.sh /src/install/run.sh
-COPY install/supervisor/dbus.ini /src/install/supervisor/dbus.ini
-COPY install/supervisor/freeswitch.ini /src/install/supervisor/freeswitch.ini
-COPY install/supervisor/nginx.ini /src/install/supervisor/nginx.ini
-COPY install/supervisor/php-fpm.ini /src/install/supervisor/php-fpm.ini
-COPY install/supervisor/postgresql.ini /src/install/supervisor/postgresql.ini
-COPY install/nginx-fusionpbx.conf /etc/nginx/conf.d/fusionpbx.conf
-
-
+	
+	
 RUN cd ~; \	
 	
-	yum install -y net-tools man; \
-	yum install -y php56 php56-php-fpm php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli; \
-	
-	
-	sed -i "s#;date.timezone =#date.timezone = Asia/Almaty#g" /etc/opt/remi/php56/php.ini; \
-	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/opt/remi/php56/php.ini; \
-	sed -i "s|listen = 127.0.0.1:9000|listen = 127.0.0.1:9056|g" /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's/;listen.owner = nobody/listen.owner = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's/;listen.group = nobody/listen.group = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's/user = apache/user = freeswitch/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's/group = apache/group = daemon/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's#php_value\[session.save_path\].*#php_value[session.save_path] = /var/run/session#g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	
-	rm -f /usr/bin/php; \
-	rm -f /usr/bin/php-cli; \
-	rm -f /usr/bin/php-cgi; \
-	ln -s /usr/bin/php56 /usr/bin/php; \
-	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
-	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
-	
-	
-	mkdir -p /var/run/php-fpm; \
-	mkdir -p /var/run/dbus; \
-	mkdir -p /var/run/freeswitch; \
-	
-	sed -i 's/user = .*/user = freeswitch/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i "s|listen = .*|listen = 127.0.0.1:9056|g" /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	sed -i 's#php_value\[session.save_path\].*#php_value[session.save_path] = /var/run/session#g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
-	
-	mkdir -p /var/run/session; \
-	chmod -R 770 /var/run/session; \
-	chown freeswitch:daemon /var/run/session; \
-	
-	chown -R freeswitch:daemon /var/www/fusionpbx; \
-	chown -R freeswitch:daemon /var/log/freeswitch; \
-	usermod  -a -G daemon freeswitch; \
-	
+	echo "[8] Create folders"; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
+	mkdir -p /var/www; \
 	mkdir -p /var/run/dbus; \
 	mv /etc/freeswitch /src/data; \
 	rm -rf /var/log/anaconda/*; \
@@ -58,13 +15,13 @@ RUN cd ~; \
 	mv /var/lib/pgsql /src/data; \
 	
 	ln -s /data/freeswitch /etc/freeswitch; \
+	ln -s /data/fusionpbx /var/www/fusionpbx; \
 	ln -s /data/log /var/log; \
-	ln -s /data/pgsql /var/lib/pgsql; \
+	ln -s /data/pgsql /var/lib/pgsql; \	
 	
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 	cp -f /src/install/run.sh /root/run.sh; \
 	chmod +x /root/run.sh;
-	
 	
 	
 	

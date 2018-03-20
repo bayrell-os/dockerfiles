@@ -1,0 +1,35 @@
+FROM bayrell/asterisk:stage0
+
+
+
+RUN cd ~; \
+
+	
+	echo "[4] Install PHP 5.6"; \
+	yum install -y php56 php56-php-fpm php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli; \	
+	
+	sed -i "s#;date.timezone =#date.timezone = Asia/Almaty#g" /etc/opt/remi/php56/php.ini; \
+	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/opt/remi/php56/php.ini; \
+	sed -i "s|listen = 127.0.0.1:9000|listen = 127.0.0.1:9056|g" /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.owner = nobody/listen.owner = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.group = nobody/listen.group = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/user = apache/user = asterisk/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/group = apache/group = asterisk/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's#php_value\[session.save_path\].*#php_value[session.save_path] = /var/run/session#g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's#upload_max_filesize =.*#upload_max_filesize = 120M#g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	
+	mkdir -p /var/run/session; \
+	mkdir -p /var/run/php-fpm; \
+	chmod -R 770 /var/run/session; \
+	chown asterisk:asterisk /var/run/session; \
+	ln -s /usr/bin/php56 /usr/bin/php; \
+	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
+	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
+	
+	
+	
+	echo "[5] Install FreePBX"; \
+	cd /usr/src; \
+	tar xf freepbx-13.0-latest.tgz
+	
+	

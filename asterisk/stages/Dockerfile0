@@ -1,0 +1,47 @@
+FROM bayrell/centos7_repos:latest
+
+ADD install /src/install/
+
+
+RUN cd ~; \
+	
+	echo "[1] Install packages"; \
+	yum update -y; \
+	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim nano openssl wget tar git ; \
+	yum install -y gcc gcc-c++ make libtool ncurses-devel libtermcap-devel kernel-devel libxml2-devel bzip2; \
+	yum install -y gnutls-devel curl-devel speex-devel gsm-devel sox lame lame-devel lame-libs lame-mp3x; \
+	yum install -y doxygen libuuid-devel jansson jansson-devel; \
+	mkdir -p /src/tmp; \
+	mkdir -p /data; 
+	
+	
+RUN cd ~; \
+
+	echo "[2] Install Asterisk"; \
+	cd /src/tmp; \
+	mv /src/install/download/asterisk-15.3.0.tar.gz ./; \
+	tar xf asterisk-15.3.0.tar.gz; \
+	cd asterisk-15.3.0; \
+	./contrib/scripts/install_prereq install; \
+	./contrib/scripts/install_prereq install-unpackaged; \
+	./contrib/scripts/get_mp3_source.sh; \
+	./configure --prefix=/usr --sysconfdir=/etc --without-dahdi --without-pri --without-gtk2 --without-radius --without-x11 --libdir=/usr/lib64; \
+	make menuselect.makeopts; \
+	
+	
+	./menuselect/menuselect --enable app_mysql --enable cdr_mysql --enable format_mp3 --enable res_config_mysql --enable app_setcallerid --enable codec_opus; \
+	
+	
+	make && make install && make config && make samples && make basic-pbx; \
+	
+	
+	useradd -m asterisk; \
+	chown asterisk.asterisk /var/run/asterisk; \
+	chown -R asterisk.asterisk /etc/asterisk; \
+	chown -R asterisk.asterisk /var/{lib,log,spool}/asterisk; \
+	chown -R asterisk.asterisk /usr/lib64/asterisk; \
+	
+	
+	rm -rf /src/tmp/*; 
+	
+
