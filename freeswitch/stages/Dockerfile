@@ -106,6 +106,7 @@ RUN cd ~; \
 	ln -s /data/fusionpbx /var/www/fusionpbx; \
 	ln -s /data/log /var/log; \
 	ln -s /data/pgsql /var/lib/pgsql; \	
+	ln -s /data/cache /var/cache/freeswitch; \	
 	
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 	cp -f /src/install/run.sh /root/run.sh; \

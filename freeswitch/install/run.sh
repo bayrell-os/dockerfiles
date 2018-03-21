@@ -12,6 +12,7 @@ function install {
 	cd /
 	
 	mkdir -p /var/run/dbus
+	mkdir -p /data/cache
 	
 	yes | cp -rfT /src/data/etc /data/etc
 	yes | cp -rfT /src/data/lib /data/lib
@@ -21,6 +22,7 @@ function install {
 	
 	chown -R freeswitch:daemon /data/etc
 	chown -R freeswitch:daemon /data/lib
+	chown -R freeswitch:daemon /data/cache
 	chown -R freeswitch:daemon /var/log/freeswitch
 	chown -R freeswitch:daemon /var/www/fusionpbx
 	chown -R freeswitch:daemon /data/fusionpbx
