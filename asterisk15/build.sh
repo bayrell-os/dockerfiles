@@ -29,19 +29,19 @@ case "$1" in
 	
 	
 	docker)
-		docker build ./ -t bayrell/asterisk --file stages/Dockerfile
+		docker build ./ -t bayrell/asterisk15 --file stages/Dockerfile
 		cd ..
 		;;
 	
 	
 	stage0)
-		docker build ./ -t bayrell/asterisk:stage0 --file stages/Dockerfile0
+		docker build ./ -t bayrell/asterisk15:stage0 --file stages/Dockerfile0
 		cd ..
 		;;
 	
 	
 	stage1)
-		docker build ./ -t bayrell/asterisk:stage1 --file stages/Dockerfile1
+		docker build ./ -t bayrell/asterisk15:stage1 --file stages/Dockerfile1
 		cd ..
 		;;
 	

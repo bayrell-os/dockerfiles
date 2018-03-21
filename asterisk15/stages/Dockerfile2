@@ -1,0 +1,35 @@
+FROM bayrell/asterisk15:stage1	
+
+
+COPY install/supervisor /src/install/supervisor
+ADD install/run.sh /src/install/run.sh
+ADD install/install-freepbx.sh /src/install/install-freepbx.sh
+
+
+	
+RUN cd ~; \	
+	
+	mkdir -p /data; \
+	mkdir -p /src/data;
+	mkdir -p /src/data/etc; \
+	mkdir -p /var/run/dbus; \
+	
+	
+	rm -rf /var/log/anaconda/*; \
+	mv -T /etc/asterisk /src/data/etc; \
+	mv /var/log /src/data; \
+	mv /var/lib/mysql /src/data; \
+	
+	ln -s /data/etc /etc/asterisk; \
+	ln -s /data/mysql /var/lib/mysql; \
+	ln -s /data/html /var/www/html; \
+	ln -s /data/log /var/log; \
+	
+	
+	cp -f /src/install/supervisor/* /etc/supervisord.d; \
+	cp -f /src/install/install-freepbx.sh /usr/bin/install-freepbx
+	cp -f /src/install/run.sh /root/run.sh; \
+	chmod +x /usr/bin/install-freepbx; \
+	chmod +x /root/run.sh;
+	
+	
