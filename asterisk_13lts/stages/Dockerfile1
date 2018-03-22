@@ -1,0 +1,41 @@
+FROM bayrell/asterisk_13lts:stage0
+
+
+RUN cd ~; \
+	
+	
+	echo "[4] Preinstall Asterisk"; \
+	mkdir -p cd /src/tmp; \
+	cd /src/tmp; \
+	mv -v /src/install/download/asterisk-13-current.tar.gz ./; \
+	tar xf asterisk-13-current.tar.gz; \
+	rm -f asterisk-13-current.tar.gz; \
+	cd asterisk-*; \
+	./contrib/scripts/install_prereq install; \
+	./contrib/scripts/install_prereq install-unpackaged; \
+	./contrib/scripts/get_mp3_source.sh; \
+	./configure --prefix=/usr --sysconfdir=/etc --without-dahdi --without-pri --without-gtk2 --without-radius --without-x11 --libdir=/usr/lib64 --with-pjproject-bundled; \
+	make menuselect.makeopts; \
+	
+	
+	echo "[5] Install Asterisk"; \
+	
+	cd /src/tmp; \
+	cd asterisk-*; \
+	./menuselect/menuselect --enable app_mysql --enable cdr_mysql --enable format_mp3 --enable app_mp3 --enable app_saycounted --enable app_sms --enable app_url --enable app_waitforring --enable app_waitforsilence --enable app_ivrdemo --enable res_config_mysql --enable format_jpeg --enable format_vox --enable CORE-SOUNDS-EN-WAV --enable CORE-SOUNDS-EN-ULAW --enable CORE-SOUNDS-EN-ALAW --enable CORE-SOUNDS-EN-GSM --enable CORE-SOUNDS-EN-G729 --enable CORE-SOUNDS-EN-G722 --enable CORE-SOUNDS-EN-SLN16 --enable CORE-SOUNDS-EN-SIREN7 --enable CORE-SOUNDS-EN-SIREN14 --enable CORE-SOUNDS-RU-WAV --enable CORE-SOUNDS-RU-ULAW --enable CORE-SOUNDS-RU-ALAW --enable CORE-SOUNDS-RU-GSM --enable CORE-SOUNDS-RU-G729 --enable CORE-SOUNDS-RU-G722 --enable CORE-SOUNDS-RU-SLN16 --enable CORE-SOUNDS-RU-SIREN7 --enable CORE-SOUNDS-RU-SIREN14 --enable MOH-OPSOUND-WAV --enable MOH-OPSOUND-ULAW --enable MOH-OPSOUND-ALAW --enable MOH-OPSOUND-GSM --enable MOH-OPSOUND-G729 --enable MOH-OPSOUND-G722 --enable MOH-OPSOUND-SLN16 --enable MOH-OPSOUND-SIREN7 --enable MOH-OPSOUND-SIREN14 --enable EXTRA-SOUNDS-EN-WAV --enable EXTRA-SOUNDS-EN-ULAW --enable EXTRA-SOUNDS-EN-ALAW --enable EXTRA-SOUNDS-EN-GSM --enable EXTRA-SOUNDS-EN-G729 --enable EXTRA-SOUNDS-EN-G722 --enable EXTRA-SOUNDS-EN-SLN16 --enable EXTRA-SOUNDS-EN-SIREN7 --enable EXTRA-SOUNDS-EN-SIREN14; \
+	
+	make all && make install && make config && make samples && make basic-pbx && make progdocs && make install-logrotate; \
+	
+	
+	useradd -m asterisk; \
+	chown asterisk:asterisk /var/run/asterisk; \
+	chown -R asterisk:asterisk /etc/asterisk; \
+	chown -R asterisk:asterisk /var/{lib,log,spool}/asterisk; \
+	chown -R asterisk:asterisk /usr/lib64/asterisk; \
+	
+	sed -i "s|enabled = no|enabled = yes|g" /etc/asterisk/manager.conf; \
+	
+	rm -rf /src/tmp/*; 
+	
+
+

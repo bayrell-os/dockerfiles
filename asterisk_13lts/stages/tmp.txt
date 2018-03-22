@@ -1,0 +1,12 @@
+./menuselect/menuselect --enable app_mysql --enable cdr_mysql --enable format_mp3 --enable app_mp3 --enable app_saycounted --enable app_sms --enable app_url --enable app_waitforring --enable app_waitforsilence --enable app_ivrdemo --enable res_config_mysql --enable format_jpeg --enable format_vox --enable CORE-SOUNDS-EN-WAV --enable CORE-SOUNDS-EN-ULAW --enable CORE-SOUNDS-EN-ALAW --enable CORE-SOUNDS-EN-GSM --enable CORE-SOUNDS-EN-G729 --enable CORE-SOUNDS-EN-G722 --enable CORE-SOUNDS-EN-SLN16 --enable CORE-SOUNDS-EN-SIREN7 --enable CORE-SOUNDS-EN-SIREN14 --enable CORE-SOUNDS-RU-WAV --enable CORE-SOUNDS-RU-ULAW --enable CORE-SOUNDS-RU-ALAW --enable CORE-SOUNDS-RU-GSM --enable CORE-SOUNDS-RU-G729 --enable CORE-SOUNDS-RU-G722 --enable CORE-SOUNDS-RU-SLN16 --enable CORE-SOUNDS-RU-SIREN7 --enable CORE-SOUNDS-RU-SIREN14 --enable MOH-OPSOUND-WAV --enable MOH-OPSOUND-ULAW --enable MOH-OPSOUND-ALAW --enable MOH-OPSOUND-GSM --enable MOH-OPSOUND-G729 --enable MOH-OPSOUND-G722 --enable MOH-OPSOUND-SLN16 --enable MOH-OPSOUND-SIREN7 --enable MOH-OPSOUND-SIREN14 --enable EXTRA-SOUNDS-EN-WAV --enable EXTRA-SOUNDS-EN-ULAW --enable EXTRA-SOUNDS-EN-ALAW --enable EXTRA-SOUNDS-EN-GSM --enable EXTRA-SOUNDS-EN-G729 --enable EXTRA-SOUNDS-EN-G722 --enable EXTRA-SOUNDS-EN-SLN16 --enable EXTRA-SOUNDS-EN-SIREN7 --enable EXTRA-SOUNDS-EN-SIREN14; \
+
+
+
+#echo "[2] Install PJSIP"; \
+#cd /src/tmp; \
+#mv /src/install/download/pjproject-2.7.2.tar.bz2 ./; \
+#tar xf pjproject-2.7.2.tar.bz2; \
+#cd pjproject-2.7.2; \
+#./configure --prefix=/usr --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr CFLAGS='-O2 -DNDEBUG'; \
+#make dep && make && make install; \
+#ldconfig; \

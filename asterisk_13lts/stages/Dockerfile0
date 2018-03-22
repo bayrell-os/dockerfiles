@@ -1,0 +1,55 @@
+FROM bayrell/centos7_repos:latest
+
+ADD install /src/install/
+
+
+RUN cd ~; \
+	echo "[1] Install packages"; \
+	yum update -y; \
+	yum groupinstall -y core base "Development Tools"; \
+	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim nano openssl wget tar git gcc gcc-c++ make libtool ncurses-devel libtermcap-devel kernel-devel libxml2-devel bzip2 gnutls-devel curl-devel speex-devel gsm-devel sox lame lame-devel lame-libs lame-mp3x doxygen libuuid-devel jansson jansson-devel crontabs; \
+	mkdir -p /src/tmp; \
+	mkdir -p /data; 
+	
+	
+	
+RUN cd ~; \
+	echo "[2] Install PHP 5.6"; \
+	yum install -y php56 php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli php56-php-mysqlnd php56-php-pear php56-php-mbstring php56-php-process php56-php-fpm; \	
+	
+	sed -i "s|;date.timezone =|date.timezone = Asia/Almaty|g" /etc/opt/remi/php56/php.ini; \
+	sed -i 's|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|g' /etc/opt/remi/php56/php.ini; \
+	sed -i 's|upload_max_filesize =.*|upload_max_filesize = 120M|g' /etc/opt/remi/php56/php.ini; \
+	sed -i "s|display_errors =.*|display_errors = On|g" /etc/opt/remi/php56/php.ini; \
+	sed -i "s|;open_basedir =.*|open_basedir = none|g" /etc/opt/remi/php56/php.ini; \
+	
+	sed -i "s|listen = 127.0.0.1:9000|listen = 127.0.0.1:9056|g" /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.owner = nobody/listen.owner = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/;listen.group = nobody/listen.group = nobody/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/user = apache/user = asterisk/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's/group = apache/group = asterisk/g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	sed -i 's|php_value\[session.save_path\].*|php_value[session.save_path] = /var/run/session|g' /etc/opt/remi/php56/php-fpm.d/www.conf; \
+	
+	
+	mkdir -p /var/run/session; \
+	mkdir -p /var/run/php-fpm; \
+	chmod -R 770 /var/run/session; \
+	chown asterisk:asterisk /var/run/session; \
+	ln -s /usr/bin/php56 /usr/bin/php; \
+	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
+	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
+	ln -s /opt/remi/php56/root/bin/pear /usr/bin/pear; 
+	
+	
+	
+RUN cd ~; \	
+	echo "[3] Install Mysql and Apache HTTP Server"; \
+	yum -y install lynx mariadb-server mariadb tftp-server httpd ncurses-devel sendmail sendmail-cf sox newt-devel libxml2-devel libtiff-devel audiofile-devel gtk2-devel subversion kernel-devel git crontabs cronie cronie-anacron uuid-devel sqlite-devel net-tools gnutls-devel unixODBC mysql-connector-odbc icu libicu-devel; \
+	
+	cp -f /src/install/php.conf /etc/httpd/conf.d/; \
+	sed -i "s|DirectoryIndex .*|DirectoryIndex index.php index.html|g" /etc/httpd/conf/httpd.conf; \
+	sed -i 's|AllowOverride None|AllowOverride All|g' /etc/httpd/conf/httpd.conf; \
+	sed -i "s|User apache|User asterisk|g" /etc/httpd/conf/httpd.conf; \
+	sed -i "s|Group apache|Group asterisk|g" /etc/httpd/conf/httpd.conf;
+	
+	
