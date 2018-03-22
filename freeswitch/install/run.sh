@@ -13,6 +13,7 @@ function install {
 	
 	mkdir -p /var/run/dbus
 	mkdir -p /data/cache
+	mkdir -p /data/session
 	
 	yes | cp -rfT /src/data/etc /data/etc
 	yes | cp -rfT /src/data/lib /data/lib
@@ -27,6 +28,8 @@ function install {
 	chown -R freeswitch:daemon /var/www/fusionpbx
 	chown -R freeswitch:daemon /data/fusionpbx
 	chown -R postgres:postgres /data/pgsql
+	chown -R freeswitch:daemon /data/session
+	chmod -R 770 /data/session
 	
 	find /var/www/fusionpbx -type d -exec chmod 775 {} +
 	find /var/www/fusionpbx -type f -exec chmod 664 {} +

@@ -92,9 +92,10 @@ RUN cd ~; \
 	mkdir -p /data; \
 	mkdir -p /src/data/etc; \
 	mkdir -p /src/data/lib; \
-	mkdir -p /var/www; \
 	mkdir -p /var/run/dbus; \
+	mkdir -p /var/www; \
 	
+	rm -rf /var/run/session; \
 	rm -rf /var/log/anaconda/*; \
 	mv -T /etc/freeswitch /src/data/etc; \
 	mv -T /var/lib/freeswitch /src/data/lib; \
@@ -107,6 +108,7 @@ RUN cd ~; \
 	ln -s /data/log /var/log; \
 	ln -s /data/pgsql /var/lib/pgsql; \	
 	ln -s /data/cache /var/cache/freeswitch; \	
+	ln -s /data/session /var/run/session; \	
 	
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 	cp -f /src/install/run.sh /root/run.sh; \

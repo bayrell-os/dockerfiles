@@ -1,4 +1,4 @@
-FROM bayrell/asterisk15:stage0
+FROM bayrell/asterisk13_lts:stage1
 
 
 COPY install/supervisor /src/install/supervisor
@@ -8,7 +8,7 @@ RUN cd ~; \
 
 	
 	echo "[3] Install PHP 5.6"; \
-	yum install -y php56 php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli php56-php-mysqlnd php56-php-pear; \	
+	yum install -y php56 php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli php56-php-mysqlnd php56-php-pear php56-mbstring php56-process; \	
 	
 	sed -i "s#;date.timezone =#date.timezone = Asia/Almaty#g" /etc/opt/remi/php56/php.ini; \
 	sed -i 's#;cgi.fix_pathinfo=1#cgi.fix_pathinfo=0#g' /etc/opt/remi/php56/php.ini; \
@@ -27,10 +27,12 @@ RUN cd ~; \
 	
 	
 	echo "[4] Install Mysql and Apache HTTP Server"; \
-	yum install -y mariadb httpd mariadb-server; \
+	yum -y install lynx mariadb-server mariadb php php-mysql php-mbstring tftp-server httpd ncurses-devel sendmail sendmail-cf sox newt-devel libxml2-devel libtiff-devel audiofile-devel gtk2-devel subversion kernel-devel git php-process crontabs cronie cronie-anacron wget vim php-xml uuid-devel sqlite-devel net-tools gnutls-devel php-pear unixODBC mysql-connector-odbc; \
 	
 	
 	echo "[5] Install NodeJS"; \
-	curl -sL https://rpm.nodesource.com/setup_8.x | bash -
-	yum -y install nodejs crontabs;
+	curl -sL https://rpm.nodesource.com/setup_8.x | bash -; \
+	yum -y install nodejs crontabs; \
+	
+	
 	

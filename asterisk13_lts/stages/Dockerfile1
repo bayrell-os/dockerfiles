@@ -1,31 +1,30 @@
-FROM bayrell/centos7_repos:latest
-
-ADD install /src/install/
+FROM bayrell/asterisk13_lts:stage0
 
 
 RUN cd ~; \
 	
-	echo "[1] Install packages"; \
-	yum update -y; \
-	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim nano openssl wget tar git ; \
-	yum install -y gcc gcc-c++ make libtool ncurses-devel libtermcap-devel kernel-devel libxml2-devel bzip2; \
-	yum install -y gnutls-devel curl-devel speex-devel gsm-devel sox lame lame-devel lame-libs lame-mp3x; \
-	yum install -y doxygen libuuid-devel jansson jansson-devel crontabs; \
-	mkdir -p /src/tmp; \
-	mkdir -p /data; 
 	
-	
-RUN cd ~; \
-
-	echo "[2] Install Asterisk"; \
+	echo "[2] Install PJSIP"; \
 	cd /src/tmp; \
-	mv /src/install/download/asterisk-15.3.0.tar.gz ./; \
-	tar xf asterisk-15.3.0.tar.gz; \
-	cd asterisk-15.3.0; \
+	mv /src/install/download/pjproject-2.7.2.tar.bz2 ./; \
+	tar xf pjproject-2.7.2.tar.bz2; \
+	cd pjproject-2.7.2; \
+	./configure --prefix=/usr --enable-shared --disable-sound --disable-resample --disable-video --disable-opencore-amr CFLAGS='-O2 -DNDEBUG'; \
+	make dep && make && make install; \
+	ldconfig; \
+
+	
+	
+	
+	echo "[3] Install Asterisk"; \
+	cd /src/tmp; \
+	mv /src/install/download/asterisk-certified-13.18-current.tar.gz ./; \
+	tar xf asterisk-certified-13.18-current.tar.gz; \
+	cd asterisk-certified-13.18-current; \
 	./contrib/scripts/install_prereq install; \
 	./contrib/scripts/install_prereq install-unpackaged; \
 	./contrib/scripts/get_mp3_source.sh; \
-	./configure --prefix=/usr --sysconfdir=/etc --without-dahdi --without-pri --without-gtk2 --without-radius --without-x11 --libdir=/usr/lib64; \
+	./configure --prefix=/usr --sysconfdir=/etc --without-dahdi --without-pri --without-gtk2 --without-radius --without-x11 --libdir=/usr/lib64 --with-pjproject-bundled; \
 	make menuselect.makeopts; \
 	
 	
@@ -44,4 +43,3 @@ RUN cd ~; \
 	
 	rm -rf /src/tmp/*; 
 	
-

@@ -1,4 +1,4 @@
-FROM bayrell/asterisk15:stage1	
+FROM bayrell/asterisk13_lts:stage2
 
 
 

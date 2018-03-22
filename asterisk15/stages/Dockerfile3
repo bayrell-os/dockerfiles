@@ -1,0 +1,36 @@
+FROM bayrell/asterisk15:stage1	
+
+
+ADD install/run.sh /src/install/run.sh
+
+
+RUN cd ~; \	
+	
+	echo "Install folders"; \
+	mkdir -p /data; \
+	mkdir -p /src/data; \
+	mkdir -p /src/data/etc; \
+	mkdir -p /var/run/dbus; \
+	
+	rm -rf /var/run/session; \
+	rm -rf /var/log/anaconda/*; \
+	mv -T /etc/asterisk /src/data/etc; \
+	mv /var/log /src/data; \
+	mv /var/lib/mysql /src/data; \
+	mv /var/www/html /src/data; \
+	
+	ln -s /data/etc /etc/asterisk; \
+	ln -s /data/mysql /var/lib/mysql; \
+	ln -s /data/html /var/www/html; \
+	ln -s /data/log /var/log; \
+	ln -s /data/session /var/run/session; \
+	
+	
+	cp -f /src/install/supervisor/* /etc/supervisord.d; \
+	cp -f /src/install/run.sh /root/run.sh; \
+	chmod +x /root/run.sh;
+	
+	
+#VOLUME ["/data"]
+CMD ["/root/run.sh"]
+

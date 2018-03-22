@@ -10,7 +10,7 @@ RUN cd ~; \
 	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim nano openssl wget tar git ; \
 	yum install -y gcc gcc-c++ make libtool ncurses-devel libtermcap-devel kernel-devel libxml2-devel bzip2; \
 	yum install -y gnutls-devel curl-devel speex-devel gsm-devel sox lame lame-devel lame-libs lame-mp3x; \
-	yum install -y doxygen libuuid-devel jansson jansson-devel; \
+	yum install -y doxygen libuuid-devel jansson jansson-devel man; \
 	mkdir -p /src/tmp; \
 	mkdir -p /data; 
 	

@@ -12,10 +12,11 @@ case "$1" in
 		mkdir -p install/download
 
 		pushd install/download
-		wget https://downloads.asterisk.org/pub/telephony/asterisk/releases/asterisk-15.3.0.tar.gz
-		wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-14.0-latest.tgz
+		wget https://downloads.asterisk.org/pub/telephony/certified-asterisk/asterisk-certified-13.18-current.tar.gz
+		wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-13.0-latest.tgz
 		wget https://developers.amocrm.ru/download/asterisk.zip -O asterisk-amocrm.zip
-		#wget http://www.pjsip.org/release/2.7.2/pjproject-2.7.2.tar.bz2
+		#wget https://iksemel.googlecode.com/files/iksemel-1.4.tar.gz
+		wget http://www.pjsip.org/release/2.7.2/pjproject-2.7.2.tar.bz2
 		#wget http://www.digip.org/jansson/releases/jansson-2.6.tar.gz		
 		#wget https://downloads.asterisk.org/pub/telephony/sounds/asterisk-core-sounds-en-wav-current.tar.gz
 		#wget https://downloads.asterisk.org/pub/telephony/sounds/asterisk-extra-sounds-en-wav-current.tar.gz
@@ -29,28 +30,39 @@ case "$1" in
 	
 	
 	docker)
-		docker build ./ -t bayrell/asterisk15 --file stages/Dockerfile
+		docker build ./ -t bayrell/asterisk13_lts --file stages/Dockerfile
 		cd ..
 		;;
 	
 	
 	stage0)
-		docker build ./ -t bayrell/asterisk15:stage0 --file stages/Dockerfile0
+		docker build ./ -t bayrell/asterisk13_lts:stage0 --file stages/Dockerfile0
 		cd ..
 		;;
 	
 	
 	stage1)
-		docker build ./ -t bayrell/asterisk15:stage1 --file stages/Dockerfile1
+		docker build ./ -t bayrell/asterisk13_lts:stage1 --file stages/Dockerfile1
 		cd ..
 		;;
 
 
 	stage2)
-		docker build ./ -t bayrell/asterisk15:stage2 --file stages/Dockerfile2
+		docker build ./ -t bayrell/asterisk13_lts:stage2 --file stages/Dockerfile2
 		cd ..
-		;;		
-		
+		;;
+	
+	
+	stage3)
+		docker build ./ -t bayrell/asterisk13_lts:stage3 --file stages/Dockerfile3
+		cd ..
+		;;
+	
+	
+	stage4)
+		docker build ./ -t bayrell/asterisk13_lts:stage4 --file stages/Dockerfile4
+		cd ..
+		;;
 	
 	all)
 		$SCRIPT download
