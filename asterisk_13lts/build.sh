@@ -22,6 +22,7 @@ case "$1" in
 	
 	docker)
 		docker build ./ -t bayrell/asterisk_13lts --file stages/Dockerfile
+		docker build ./ -t bayrell/asterisk_13lts:ru --file stages/DockerfileRU
 		cd ..
 		;;
 	

@@ -150,9 +150,6 @@ RUN cd ~; \
 	ln -s /data/amportal.conf /etc/amportal.conf; \
 	ln -s /data/odbc.ini /etc/odbc.ini; \
 	
-	localedef -i ru_RU -f UTF-8 ru_RU.UTF-8; \
-	sed -i 's|^LANG=.*|LANG="ru_RU.UTF-8"|g' /etc/locale.conf; \
-	
 	cp -f /src/install/run.sh /root/run.sh; \
 	chmod +x /root/run.sh;
 	

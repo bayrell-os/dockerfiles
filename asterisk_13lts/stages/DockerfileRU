@@ -1,0 +1,7 @@
+FROM bayrell/asterisk_13lts:latest
+
+
+RUN cd ~; \
+	localedef -i ru_RU -f UTF-8 ru_RU.UTF-8; \
+	sed -i 's|^LANG=.*|LANG="ru_RU.UTF-8"|g' /etc/locale.conf;
+
