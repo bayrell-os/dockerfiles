@@ -7,6 +7,8 @@ RUN cd ~; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
 	mkdir -p /src/data/etc; \
+	mkdir -p /src/data/lib; \
+	mkdir -p /src/data/spool; \
 	mkdir -p /var/run/dbus; \
 	
 	rm -rf /var/run/session; \
@@ -15,14 +17,24 @@ RUN cd ~; \
 	mv /var/log /src/data; \
 	mv /var/www/html /src/data; \
 	mv /var/lib/mysql /src/data; \
+	mv -T /var/lib/asterisk /src/data/lib; \
+	mv -T /var/spool/asterisk /src/data/spool; \
+	mv -f /etc/amportal.conf /src/data; \
+	mv -f /etc/odbc.ini /src/data; \
 	
 	ln -s /data/etc /etc/asterisk; \
 	ln -s /data/mysql /var/lib/mysql; \
 	ln -s /data/html /var/www/html; \
 	ln -s /data/log /var/log; \
 	ln -s /data/session /var/run/session; \
+	ln -s /data/spool /var/spool/asterisk; \
+	ln -s /data/lib /var/lib/asterisk; \
+	ln -s /data/amportal.conf /etc/amportal.conf; \
+	ln -s /data/odbc.ini /etc/odbc.ini; \
 	
-	cp -f /src/install/supervisor/* /etc/supervisord.d; \
+	localedef -i ru_RU -f UTF-8 ru_RU.UTF-8; \
+	sed -i 's|^LANG=.*|LANG="ru_RU.UTF-8"|g' /etc/locale.conf; \
+	
 	cp -f /src/install/run.sh /root/run.sh; \
 	chmod +x /root/run.sh;
 	

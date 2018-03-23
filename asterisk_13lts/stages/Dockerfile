@@ -9,17 +9,15 @@ RUN cd ~; \
 	yum groupinstall -y core base "Development Tools"; \
 	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim nano openssl wget tar git gcc gcc-c++ make libtool ncurses-devel libtermcap-devel kernel-devel libxml2-devel bzip2 gnutls-devel curl-devel speex-devel gsm-devel sox lame lame-devel lame-libs lame-mp3x doxygen libuuid-devel jansson jansson-devel crontabs; \
 	mkdir -p /src/tmp; \
-	mkdir -p /data; 
+	mkdir -p /data; \
 	
 	
-	
-RUN cd ~; \
 	echo "[2] Install PHP 5.6"; \
 	yum install -y php56 php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli php56-php-mysqlnd php56-php-pear php56-php-mbstring php56-php-process php56-php-fpm; \	
 	
 	sed -i "s|;date.timezone =|date.timezone = Asia/Almaty|g" /etc/opt/remi/php56/php.ini; \
 	sed -i 's|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|g' /etc/opt/remi/php56/php.ini; \
-	sed -i 's|upload_max_filesize =.*|upload_max_filesize = 120M|g' /etc/opt/remi/php56/php.ini; \
+	sed -i 's|upload_max_filesize =.*|upload_max_filesize = 256M|g' /etc/opt/remi/php56/php.ini; \
 	sed -i "s|display_errors =.*|display_errors = On|g" /etc/opt/remi/php56/php.ini; \
 	sed -i "s|;open_basedir =.*|open_basedir = none|g" /etc/opt/remi/php56/php.ini; \
 	
@@ -38,22 +36,21 @@ RUN cd ~; \
 	ln -s /usr/bin/php56 /usr/bin/php; \
 	ln -s /usr/bin/php56-cli /usr/bin/php-cli; \
 	ln -s /usr/bin/php56-cgi /usr/bin/php-cgi; \
-	ln -s /opt/remi/php56/root/bin/pear /usr/bin/pear; 
+	ln -s /opt/remi/php56/root/bin/pear /usr/bin/pear;  \
 	
 	
-	
-RUN cd ~; \	
 	echo "[3] Install Mysql and Apache HTTP Server"; \
 	yum -y install lynx mariadb-server mariadb tftp-server httpd ncurses-devel sendmail sendmail-cf sox newt-devel libxml2-devel libtiff-devel audiofile-devel gtk2-devel subversion kernel-devel git crontabs cronie cronie-anacron uuid-devel sqlite-devel net-tools gnutls-devel unixODBC mysql-connector-odbc icu libicu-devel; \
 	
 	cp -f /src/install/php.conf /etc/httpd/conf.d/; \
+	sed -i "s|DirectoryIndex .*|DirectoryIndex index.php index.html|g" /etc/httpd/conf/httpd.conf; \
+	sed -i 's|AllowOverride None|AllowOverride All|g' /etc/httpd/conf/httpd.conf; \
+	sed -i "s|User apache|User asterisk|g" /etc/httpd/conf/httpd.conf; \
+	sed -i "s|Group apache|Group asterisk|g" /etc/httpd/conf/httpd.conf; \
 	
 	
 	
-RUN cd ~; \
-	
-	
-	echo "[4] Preinstall Asterisk"; \
+	echo "[4] Configure Asterisk"; \
 	mkdir -p cd /src/tmp; \
 	cd /src/tmp; \
 	mv -v /src/install/download/asterisk-13-current.tar.gz ./; \
@@ -82,17 +79,18 @@ RUN cd ~; \
 	chown -R asterisk:asterisk /var/{lib,log,spool}/asterisk; \
 	chown -R asterisk:asterisk /usr/lib64/asterisk; \
 	
+	sed -i "s|enabled = no|enabled = yes|g" /etc/asterisk/manager.conf; \
 	
-	rm -rf /src/tmp/*; 
+	rm -rf /src/tmp/*;  \
 	
-
-
-RUN cd ~; \	
-
+	
+	yes | cp -f /src/install/my.cnf /etc/my.cnf; \
+	yes | cp -rfT /src/install/my.cnf.d /etc/my.cnf.d; \
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 
 	echo "[6] Init database"; \
 	/usr/libexec/mariadb-prepare-db-dir; \
+	
 	
 	echo "[7] Run supervisor"; \
 	/usr/bin/supervisord -c /etc/supervisord.conf; \	
@@ -103,7 +101,6 @@ RUN cd ~; \
 	
 	echo "[8] Install dependencies"; \
 	pear install Console_Getopt; \
-	npm install -g npm-cache; \
 	
 	
 	echo "[9] Install FreePBX"; \
@@ -116,30 +113,20 @@ RUN cd ~; \
 	cd freepbx;	\
 	
 	
-	sed -i "s|enabled = no|enabled = yes|g" /etc/asterisk/manager.conf; \
-	sed -i "s|User apache|User asterisk|g" /etc/httpd/conf/httpd.conf; \
-	sed -i "s|Group apache|Group asterisk|g" /etc/httpd/conf/httpd.conf; \
-	sed -i 's|AllowOverride None|AllowOverride All|g' /etc/httpd/conf/httpd.conf; \
-	
-	
 	cd /opt/freepbx; \
 	./start_asterisk start; \
 	rm -f /etc/asterisk/asterisk.conf; \
 	./install -n; \
 	
-	fwconsole ma install sipsettings; \
-	fwconsole ma enable sipsettings; \
+	supervisorctl stop all;	 \
 	
-	supervisorctl stop all;	
-	
-	
-	
-RUN cd ~; \	
 	
 	echo "[10] Install folders"; \
 	mkdir -p /data; \
 	mkdir -p /src/data; \
 	mkdir -p /src/data/etc; \
+	mkdir -p /src/data/lib; \
+	mkdir -p /src/data/spool; \
 	mkdir -p /var/run/dbus; \
 	
 	rm -rf /var/run/session; \
@@ -148,17 +135,27 @@ RUN cd ~; \
 	mv /var/log /src/data; \
 	mv /var/www/html /src/data; \
 	mv /var/lib/mysql /src/data; \
+	mv -T /var/lib/asterisk /src/data/lib; \
+	mv -T /var/spool/asterisk /src/data/spool; \
+	mv -f /etc/amportal.conf /src/data; \
+	mv -f /etc/odbc.ini /src/data; \
 	
 	ln -s /data/etc /etc/asterisk; \
 	ln -s /data/mysql /var/lib/mysql; \
 	ln -s /data/html /var/www/html; \
 	ln -s /data/log /var/log; \
 	ln -s /data/session /var/run/session; \
+	ln -s /data/spool /var/spool/asterisk; \
+	ln -s /data/lib /var/lib/asterisk; \
+	ln -s /data/amportal.conf /etc/amportal.conf; \
+	ln -s /data/odbc.ini /etc/odbc.ini; \
 	
-	cp -f /src/install/supervisor/* /etc/supervisord.d; \
+	localedef -i ru_RU -f UTF-8 ru_RU.UTF-8; \
+	sed -i 's|^LANG=.*|LANG="ru_RU.UTF-8"|g' /etc/locale.conf; \
+	
 	cp -f /src/install/run.sh /root/run.sh; \
 	chmod +x /root/run.sh;
 	
 	
 VOLUME ["/data"]
-CMD ["/root/run.sh"]	
+CMD ["/root/run.sh"]		

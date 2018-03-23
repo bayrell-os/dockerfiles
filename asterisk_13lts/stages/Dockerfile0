@@ -19,7 +19,7 @@ RUN cd ~; \
 	
 	sed -i "s|;date.timezone =|date.timezone = Asia/Almaty|g" /etc/opt/remi/php56/php.ini; \
 	sed -i 's|;cgi.fix_pathinfo=1|cgi.fix_pathinfo=0|g' /etc/opt/remi/php56/php.ini; \
-	sed -i 's|upload_max_filesize =.*|upload_max_filesize = 120M|g' /etc/opt/remi/php56/php.ini; \
+	sed -i 's|upload_max_filesize =.*|upload_max_filesize = 256M|g' /etc/opt/remi/php56/php.ini; \
 	sed -i "s|display_errors =.*|display_errors = On|g" /etc/opt/remi/php56/php.ini; \
 	sed -i "s|;open_basedir =.*|open_basedir = none|g" /etc/opt/remi/php56/php.ini; \
 	

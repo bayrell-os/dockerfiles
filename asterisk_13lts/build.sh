@@ -13,8 +13,8 @@ case "$1" in
 
 		pushd install/download
 		wget https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
-		wget https://developers.amocrm.ru/download/asterisk.zip -O asterisk-amocrm.zip
 		wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-13.0-latest.tgz
+		#wget https://developers.amocrm.ru/download/asterisk.zip -O asterisk-amocrm.zip
 		popd
 		
 		;;

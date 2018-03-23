@@ -1,8 +1,11 @@
 FROM bayrell/asterisk_13lts:stage1
 
+ADD install /src/install/
 
 RUN cd ~; \	
-
+	
+	yes | cp -f /src/install/my.cnf /etc/my.cnf; \
+	yes | cp -rfT /src/install/my.cnf.d /etc/my.cnf.d; \
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
 
 	echo "[6] Init database"; \
@@ -17,7 +20,6 @@ RUN cd ~; \
 	
 	echo "[8] Install dependencies"; \
 	pear install Console_Getopt; \
-	npm install -g npm-cache; \
 	
 	
 	echo "[9] Install FreePBX"; \
@@ -30,19 +32,10 @@ RUN cd ~; \
 	cd freepbx;	\
 	
 	
-	sed -i "s|enabled = no|enabled = yes|g" /etc/asterisk/manager.conf; \
-	sed -i "s|User apache|User asterisk|g" /etc/httpd/conf/httpd.conf; \
-	sed -i "s|Group apache|Group asterisk|g" /etc/httpd/conf/httpd.conf; \
-	sed -i 's|AllowOverride None|AllowOverride All|g' /etc/httpd/conf/httpd.conf; \
-	
-	
 	cd /opt/freepbx; \
 	./start_asterisk start; \
 	rm -f /etc/asterisk/asterisk.conf; \
 	./install -n; \
-	
-	fwconsole ma install sipsettings; \
-	fwconsole ma enable sipsettings; \
 	
 	supervisorctl stop all;	
 	
