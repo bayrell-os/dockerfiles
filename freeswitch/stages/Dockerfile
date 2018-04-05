@@ -11,7 +11,7 @@ RUN cd ~; \
 	yum update -y; \
 	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim openssl; \
 	yum install -y ghostscript libtiff-devel libtiff-tools at less; \
-	yum install -y memcached curl gdb man; \
+	yum install -y memcached curl gdb man sysvinit-tools lsof; \
 	
 	
 	
