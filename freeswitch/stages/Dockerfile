@@ -1,28 +1,24 @@
 FROM bayrell/centos7_repos:latest
 
-
 ADD install /src/install/
-ADD fusionpbx /src/fusionpbx/
-
+ADD fusionpbx /var/www/fusionpbx
 
 RUN cd ~; \
 	
 	echo "[1] Install common programs"; \
 	yum update -y; \
 	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim openssl; \
-	yum install -y ghostscript libtiff-devel libtiff-tools at less; \
-	yum install -y memcached curl gdb man sysvinit-tools lsof; \
+	yum install -y ghostscript libtiff-devel libtiff-tools at less iproute; \
+	yum install -y memcached curl gdb man; \
 	
 	
 	
 	echo "[2] Install freeswitch"; \
 	rpm --import /src/install/download/RPM-GPG-KEY-FREESWITCH; \
 	yum install -y /src/install/download/freeswitch-release-1-6.noarch.rpm; \
-	yum install -y freeswitch-config-vanilla freeswitch-lang-* freeswitch-sounds-*; 
+	yum install -y freeswitch-config-vanilla freeswitch-lang-* freeswitch-sounds-* freeswitch-lua freeswitch-xml-cdr freeswitch-python freeswitch-endpoint-rtmp freeswitch-codec-opus freeswitch-application-translate; \
 	
 	
-	
-RUN cd ~; \	
 	
 	echo "[3] Install Fusion PBX"; \
 	rpm -Uvh /src/install/download/cert-forensics-tools-release-el7.rpm; \
@@ -30,7 +26,6 @@ RUN cd ~; \
 	mv /etc/freeswitch /etc/freeswitch.orig; \
 	mkdir /etc/freeswitch; \
 	mkdir -p /var/run/freeswitch; \
-	cp -R /src/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	
 	usermod -a -G daemon freeswitch; \
 	chown -R freeswitch:daemon /etc/freeswitch; \
@@ -38,18 +33,15 @@ RUN cd ~; \
 	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /var/log/freeswitch; \
 	chown -R freeswitch:daemon /var/run/freeswitch; \
-	chown -R freeswitch:daemon /src/fusionpbx; \
-	find /src/fusionpbx -type d -exec chmod 775 {} +; \
-	find /src/fusionpbx -type f -exec chmod 664 {} +; \
+	
+	
 	
 	echo "[4] Install sngrep"; \
 	rpm --import /src/install/download/IRONTEC; \
 	cp -fv /src/install/irontec.repo /etc/yum.repos.d/irontec.repo; \
-	yum install -y sngrep;
+	yum install -y sngrep; \
 	
 	
-	
-RUN cd ~; \	
 	
 	echo "[5] Install PHP 5.6"; \
 	yum install -y php56 php56-php-fpm php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli; \	
@@ -74,48 +66,55 @@ RUN cd ~; \
 	yum install -y nginx; \
 	cp /src/install/nginx-fusionpbx.conf /etc/nginx/conf.d/fusionpbx.conf; \
 	rm -f /etc/nginx/nginx.conf; \
-	cp -f /src/install/nginx.conf /etc/nginx/nginx.conf; 
+	cp -f /src/install/nginx.conf /etc/nginx/nginx.conf; \
 	
-	
-	
-RUN cd ~; \	
 	
 	echo "[7] Install Postgre SQL"; \	
 	rpm -Uvh /src/install/download/pgdg-centos94-9.4-3.noarch.rpm; \
-	yum -y install postgresql94-server postgresql94-contrib postgresql94; 
+	yum -y install postgresql94-server postgresql94-contrib postgresql94; \
 	
 	
-	
-RUN cd ~; \	
-	
-	echo "[8] Create folders"; \
-	mkdir -p /data; \
-	mkdir -p /src/data/etc; \
-	mkdir -p /src/data/lib; \
-	mkdir -p /var/run/dbus; \
-	mkdir -p /var/www; \
-	
-	rm -rf /var/run/session; \
-	rm -rf /var/log/anaconda/*; \
-	mv -T /etc/freeswitch /src/data/etc; \
-	mv -T /var/lib/freeswitch /src/data/lib; \
-	mv /var/log /src/data; \
-	mv /var/lib/pgsql /src/data; \
-	
-	ln -s /data/etc /etc/freeswitch; \
-	ln -s /data/lib /var/lib/freeswitch; \
-	ln -s /data/fusionpbx /var/www/fusionpbx; \
-	ln -s /data/log /var/log; \
-	ln -s /data/pgsql /var/lib/pgsql; \	
-	ln -s /data/cache /var/cache/freeswitch; \	
-	ln -s /data/session /var/run/session; \	
-	
+	echo "[7] Install folders"; \
+	mv /etc/freeswitch /etc/freeswitch.orig; \
+	mkdir /data; \
+	mkdir /etc/freeswitch; \
+	mkdir /etc/fusionpbx; \
+	cp -R /var/www/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	cp -f /src/install/supervisor/* /etc/supervisord.d; \
-	cp -f /src/install/run.sh /root/run.sh; \
-	chmod +x /root/run.sh;
 	
+	chown -R freeswitch:daemon /var/www/fusionpbx; \
+	chown -R freeswitch:daemon /etc/freeswitch; \
+	chown -R freeswitch:daemon /var/log/freeswitch; \
+	chown -R freeswitch:daemon /var/run/freeswitch; \
+	chown -R freeswitch:daemon /var/lib/freeswitch; \
+	chown -R freeswitch:daemon /usr/share/freeswitch; \
+	chown -R freeswitch:daemon /etc/fusionpbx; \
+	chown -R freeswitch:daemon /var/run/session; \
+	
+	find /etc/freeswitch -type d -exec chmod 770 {} +; \
+	find /var/lib/freeswitch -type d -exec chmod 770 {} +;  \
+	find /var/log/freeswitch -type d -exec chmod 770 {} +;  \
+	find /usr/share/freeswitch -type d -exec chmod 770 {} +;  \
+	find /etc/freeswitch -type f -exec chmod 664 {} +;  \
+	find /var/lib/freeswitch -type f -exec chmod 664 {} +;  \
+	find /var/log/freeswitch -type f -exec chmod 664 {} +;  \
+	find /usr/share/freeswitch -type f -exec chmod 664 {} +;  \
+	
+	mkdir -p /data/fusionpbx && mv -fT /var/www/fusionpbx /data/fusionpbx && ln -s /data/fusionpbx /var/www/fusionpbx; \
+	mkdir -p /data/etc/freeswitch && mv -fT /etc/freeswitch /data/etc/freeswitch && ln -s /data/etc/freeswitch /etc/freeswitch; \
+	mkdir -p /data/etc/fusionpbx && mv -fT /etc/fusionpbx /data/etc/fusionpbx && ln -s /data/etc/fusionpbx /etc/fusionpbx; \
+	mkdir -p /data/log && mv -fT /var/log/freeswitch /data/log && ln -s /data/log /var/log/freeswitch; \
+	mkdir -p /data/run && mv -fT /var/run/freeswitch /data/run && ln -s /data/run /var/run/freeswitch; \
+	mkdir -p /data/lib && mv -fT /var/lib/freeswitch /data/lib && ln -s /data/lib /var/lib/freeswitch; \
+	mkdir -p /data/session && mv -fT /var/run/session /data/session && ln -s /data/session /var/run/session; \
+	mkdir -p /data/pgsql && mv -fT /var/lib/pgsql /data/pgsql && ln -s /data/pgsql /var/lib/pgsql; \
+	
+	mkdir -p /src/install/data && mv -fT /data /src/install/data; \
+	chmod +x /src/install/run.sh; \
+	echo "OK";
 	
 	
 VOLUME ["/data"]
-CMD ["/root/run.sh"]
+CMD ["/src/install/run.sh"]
+	
 	

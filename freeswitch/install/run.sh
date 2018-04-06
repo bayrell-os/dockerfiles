@@ -2,40 +2,25 @@
 
 cd ~
 
-PGSQL_PASSWORD="pa$$word"
-
+GATEWAY=10.0.0.100
+PSQL_PASSWORD="psqlpassword"
+system_username="admin"
+system_password="admin"
 
 function install {
 	DATE=`date "+%Y-%m-%d %H:%M:%S"`
 	
 	echo "Install System"
-	cd /
 	
-	mkdir -p /var/run/dbus
-	mkdir -p /data/cache
-	mkdir -p /data/session
+	mkdir /data
+	cp -arf /src/install/data/etc /data
+	cp -arf /src/install/data/fusionpbx /data
+	cp -arf /src/install/data/lib /data
+	cp -arf /src/install/data/log /data
+	cp -arf /src/install/data/run /data
+	cp -arf /src/install/data/session /data
 	
-	yes | cp -rfT /src/data/etc /data/etc
-	yes | cp -rfT /src/data/lib /data/lib
-	yes | cp -rfT /src/data/log /data/log
-	yes | cp -rfT /src/data/pgsql /data/pgsql
-	yes | cp -rfT /src/fusionpbx /data/fusionpbx
-	
-	chown -R freeswitch:daemon /data/etc
-	chown -R freeswitch:daemon /data/lib
-	chown -R freeswitch:daemon /data/cache
-	chown -R freeswitch:daemon /var/log/freeswitch
-	chown -R freeswitch:daemon /var/www/fusionpbx
-	chown -R freeswitch:daemon /data/fusionpbx
-	chown -R postgres:postgres /data/pgsql
-	chown -R freeswitch:daemon /data/session
-	chmod -R 770 /data/session
-	
-	find /var/www/fusionpbx -type d -exec chmod 775 {} +
-	find /var/www/fusionpbx -type f -exec chmod 664 {} +
-	find /data/fusionpbx -type d -exec chmod 775 {} +
-	find /data/fusionpbx -type f -exec chmod 664 {} +
-	
+	cd /tmp
 	echo "Install Database"
 	sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data
 	
@@ -44,18 +29,77 @@ function install {
 	
 	sleep 10
 	
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE DATABASE fusionpbx"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE DATABASE freeswitch"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE ROLE fusionpbx WITH SUPERUSER LOGIN PASSWORD '$PGSQL_PASSWORD'"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "CREATE ROLE freeswitch WITH SUPERUSER LOGIN PASSWORD '$PGSQL_PASSWORD'"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE fusionpbx to fusionpbx"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to fusionpbx"
-	sudo -u postgres /usr/pgsql-9.4/bin/psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch"
+	sudo -u postgres psql -c "CREATE DATABASE fusionpbx"
+	sudo -u postgres psql -c "CREATE DATABASE freeswitch"
+	sudo -u postgres psql -c "CREATE ROLE fusionpbx WITH SUPERUSER LOGIN PASSWORD '$PSQL_PASSWORD'"
+	sudo -u postgres psql -c "CREATE ROLE freeswitch WITH SUPERUSER LOGIN PASSWORD '$PSQL_PASSWORD'"
+	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE fusionpbx to fusionpbx"
+	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to fusionpbx"
+	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch"
+	sudo -u postgres psql -c "ALTER USER fusionpbx WITH PASSWORD '$PSQL_PASSWORD';"
+	sudo -u postgres psql -c "ALTER USER freeswitch WITH PASSWORD '$PSQL_PASSWORD';"
+	
 	
 	echo "NO DELETE THIS FILE" > /data/installed.nodelete
 	echo "IF THIS FILE DOES NOT EXISTS THE SYSTEM WILL BE REINSTALLED AND ALL DATA LOST" >> /data/installed.nodelete
 	echo "" >> /data/installed.nodelete
 	echo "Installed in $DATE" >> /data/installed.nodelete
+}
+
+
+function finish {
+
+	cp -f /src/install/config.php /etc/fusionpbx/config.php
+	sed -i /etc/fusionpbx/config.php -e s:'{database_username}:fusionpbx:'
+	sed -i /etc/fusionpbx/config.php -e s:"{database_password}:$PSQL_PASSWORD:"
+
+	#from https://github.com/fusionpbx/fusionpbx-install.sh/blob/master/centos/resources/finish.sh
+	
+	#add the database schema
+	cd /var/www/fusionpbx && php /var/www/fusionpbx/core/upgrade/upgrade_schema.php > /dev/null 2>&1
+	
+	#get the ip address
+	domain_name=$GATEWAY
+	
+	#get a domain_uuid
+	domain_uuid=$(php /var/www/fusionpbx/resources/uuid.php)
+	
+	#add the domain name
+	sudo -u postgres psql --username=fusionpbx -c "insert into v_domains (domain_uuid, domain_name, domain_enabled) values('$domain_uuid', '$domain_name', 'true');"
+	
+	#app defaults
+	cd /var/www/fusionpbx && php /var/www/fusionpbx/core/upgrade/upgrade_domains.php
+	
+	#add the user
+	user_uuid=$(/usr/bin/php /var/www/fusionpbx/resources/uuid.php);
+	user_salt=$(/usr/bin/php /var/www/fusionpbx/resources/uuid.php);
+	user_name=$system_username
+	user_password=$system_password
+	password_hash=$(php -r "echo md5('$user_salt$user_password');");
+	sudo -u postgres psql --username=fusionpbx -t -c "insert into v_users (user_uuid, domain_uuid, username, password, salt, user_enabled) values('$user_uuid', '$domain_uuid', '$user_name', '$password_hash', '$user_salt', 'true');"
+	
+	#get the superadmin group_uuid
+	group_uuid=$(psql --username=fusionpbx -t -c "select group_uuid from v_groups where group_name = 'superadmin';");
+	group_uuid=$(echo $group_uuid | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//')
+	
+	#add the user to the group
+	group_user_uuid=$(/usr/bin/php /var/www/fusionpbx/resources/uuid.php);
+	group_name=superadmin
+	sudo -u postgres psql --username=fusionpbx -c "insert into v_group_users (group_user_uuid, domain_uuid, group_name, group_uuid, user_uuid) values('$group_user_uuid', '$domain_uuid', '$group_name', '$group_uuid', '$user_uuid');"
+	
+	#update xml_cdr url, user and password
+	xml_cdr_username=$(dd if=/dev/urandom bs=1 count=12 2>/dev/null | base64 | sed 's/[=\+//]//g')
+	xml_cdr_password=$(dd if=/dev/urandom bs=1 count=12 2>/dev/null | base64 | sed 's/[=\+//]//g')
+	sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{v_http_protocol}:http:"
+	sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{domain_name}:127.0.0.1:"
+	sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{v_project_path}::"
+	sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{v_user}:$xml_cdr_username:"
+	sed -i /etc/freeswitch/autoload_configs/xml_cdr.conf.xml -e s:"{v_pass}:$xml_cdr_password:"
+	
+	#app defaults
+	cd /var/www/fusionpbx && php /var/www/fusionpbx/core/upgrade/upgrade_domains.php
+	
+	supervisorctl restart freeswitch
 }
 
 

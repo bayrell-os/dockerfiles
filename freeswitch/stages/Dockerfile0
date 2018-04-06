@@ -1,8 +1,6 @@
 FROM bayrell/centos7_repos:latest
 
-
 ADD install /src/install/
-ADD fusionpbx /src/fusionpbx/
 
 
 RUN cd ~; \
@@ -10,7 +8,7 @@ RUN cd ~; \
 	echo "[1] Install common programs"; \
 	yum update -y; \
 	yum install -y mc nano htop supervisor sudo git ca-certificates ntp htop net-tools vim openssl; \
-	yum install -y ghostscript libtiff-devel libtiff-tools at less; \
+	yum install -y ghostscript libtiff-devel libtiff-tools at less iproute; \
 	yum install -y memcached curl gdb man; \
 	
 	
@@ -18,11 +16,9 @@ RUN cd ~; \
 	echo "[2] Install freeswitch"; \
 	rpm --import /src/install/download/RPM-GPG-KEY-FREESWITCH; \
 	yum install -y /src/install/download/freeswitch-release-1-6.noarch.rpm; \
-	yum install -y freeswitch-config-vanilla freeswitch-lang-* freeswitch-sounds-*; 
+	yum install -y freeswitch-config-vanilla freeswitch-lang-* freeswitch-sounds-* freeswitch-lua freeswitch-xml-cdr freeswitch-python freeswitch-endpoint-rtmp freeswitch-codec-opus freeswitch-application-translate; \
 	
 	
-	
-RUN cd ~; \	
 	
 	echo "[3] Install Fusion PBX"; \
 	rpm -Uvh /src/install/download/cert-forensics-tools-release-el7.rpm; \
@@ -30,7 +26,6 @@ RUN cd ~; \
 	mv /etc/freeswitch /etc/freeswitch.orig; \
 	mkdir /etc/freeswitch; \
 	mkdir -p /var/run/freeswitch; \
-	cp -R /src/fusionpbx/resources/templates/conf/* /etc/freeswitch; \
 	
 	usermod -a -G daemon freeswitch; \
 	chown -R freeswitch:daemon /etc/freeswitch; \
@@ -38,18 +33,15 @@ RUN cd ~; \
 	chown -R freeswitch:daemon /var/lib/freeswitch; \
 	chown -R freeswitch:daemon /var/log/freeswitch; \
 	chown -R freeswitch:daemon /var/run/freeswitch; \
-	chown -R freeswitch:daemon /src/fusionpbx; \
-	find /src/fusionpbx -type d -exec chmod 775 {} +; \
-	find /src/fusionpbx -type f -exec chmod 664 {} +; \
+	
+	
 	
 	echo "[4] Install sngrep"; \
 	rpm --import /src/install/download/IRONTEC; \
 	cp -fv /src/install/irontec.repo /etc/yum.repos.d/irontec.repo; \
-	yum install -y sngrep;
+	yum install -y sngrep; \
 	
 	
-	
-RUN cd ~; \	
 	
 	echo "[5] Install PHP 5.6"; \
 	yum install -y php56 php56-php-fpm php56-php-gd php56-php-pgsql php56-php-odbc php56-php-imap php56-php-mcrypt php56-php-opcache php56-php-common php56-php-pdo php56-php-soap php56-php-xml php56-php-xmlrpc php56-php-cli; \	
@@ -74,14 +66,14 @@ RUN cd ~; \
 	yum install -y nginx; \
 	cp /src/install/nginx-fusionpbx.conf /etc/nginx/conf.d/fusionpbx.conf; \
 	rm -f /etc/nginx/nginx.conf; \
-	cp -f /src/install/nginx.conf /etc/nginx/nginx.conf; 
+	cp -f /src/install/nginx.conf /etc/nginx/nginx.conf; \
 	
-	
-	
-RUN cd ~; \	
 	
 	echo "[7] Install Postgre SQL"; \	
 	rpm -Uvh /src/install/download/pgdg-centos94-9.4-3.noarch.rpm; \
-	yum -y install postgresql94-server postgresql94-contrib postgresql94; 
+	yum -y install postgresql94-server postgresql94-contrib postgresql94; \
+	
+	
+	echo "Ok";
 	
 	
