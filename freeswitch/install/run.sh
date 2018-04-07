@@ -13,22 +13,23 @@ function install {
 	echo "Install System"
 	
 	mkdir /data
-	cp -arf /src/install/data/etc /data
-	cp -arf /src/install/data/fusionpbx /data
-	cp -arf /src/install/data/lib /data
-	cp -arf /src/install/data/log /data
-	cp -arf /src/install/data/run /data
-	cp -arf /src/install/data/session /data
+	cp -arf /src/data/etc /data
+	cp -arf /src/data/fusionpbx /data
+	cp -arf /src/data/lib /data
+	cp -arf /src/data/log /data
+	cp -arf /src/data/run /data
+	cp -arf /src/data/session /data
+	cp -arf /src/data/postgresql /data
 	
 	cd /tmp
-	echo "Install Database"
-	sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data
+	#sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data
 	
 	echo "Run supervisor"
-	/usr/bin/supervisord -c /etc/supervisord.conf
+	/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 	
 	sleep 10
 	
+	echo "Create Database"
 	sudo -u postgres psql -c "CREATE DATABASE fusionpbx"
 	sudo -u postgres psql -c "CREATE DATABASE freeswitch"
 	sudo -u postgres psql -c "CREATE ROLE fusionpbx WITH SUPERUSER LOGIN PASSWORD '$PSQL_PASSWORD'"
@@ -104,7 +105,7 @@ function finish {
 
 
 function run {
-	/usr/bin/supervisord -c /etc/supervisord.conf
+	/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
 
