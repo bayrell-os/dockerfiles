@@ -36,7 +36,7 @@ iptables -t filter -A DOCKER -d 172.20.10.50/32 ! -i mynetwork -o mynetwork -p u
 
 Run container
 ```
-docker run -it -d --name freeswitch -v freeswitch_data:/data --ip=172.20.10.50 --network="mynetwork" --restart=unless-stopped bayrell/freeswitch:stage1
+docker run -it -d --name freeswitch -v freeswitch_data:/data --ip=172.20.10.50 --network="mynetwork" --restart=unless-stopped bayrell/freeswitch
 ```
 
 
