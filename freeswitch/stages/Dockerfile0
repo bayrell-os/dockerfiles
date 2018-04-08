@@ -17,7 +17,7 @@ RUN cd ~; \
 	
 	
 	echo "[2] Install Freeswitch"; \
-	apt-get install -y --force-yes supervisor memcached haveged ghostscript libtiff-tools libtiff5-dev freeswitch-meta-all freeswitch-all-dbg freeswitch-meta-bare ntp freeswitch-mod-commands freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-sofia-dbg freeswitch-dbg freeswitch-mod-shout freeswitch-mod-sms-dbg freeswitch-mod-imagick freeswitch-mod-skypopen-dbg freeswitch-music-default gdb libyuv-dev sngrep lame postgresql nginx php5 php5-fpm php5-pgsql apt-transport-https dbus at; \
+	apt-get install -y --force-yes supervisor memcached haveged ghostscript libtiff-tools libtiff5-dev freeswitch-meta-all freeswitch-all freeswitch-all-dbg freeswitch-meta-bare ntp freeswitch-mod-commands freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-sofia-dbg freeswitch-dbg freeswitch-mod-shout freeswitch-mod-sms-dbg freeswitch-mod-imagick freeswitch-mod-skypopen-dbg freeswitch-music-default gdb libyuv-dev sngrep lame postgresql nginx php5 php5-fpm php5-pgsql apt-transport-https dbus at; \
 	
 	echo "OK"
 	

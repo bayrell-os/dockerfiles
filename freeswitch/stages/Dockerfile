@@ -1,4 +1,5 @@
-FROM bayrell/freeswitch:stage0
+FROM debian:8
+
 
 ADD install /src/install/
 ADD fusionpbx /var/www/fusionpbx
@@ -7,7 +8,19 @@ ADD fusionpbx /var/www/fusionpbx
 RUN cd ~; \
 	
 	export DEBIAN_FRONTEND=noninteractive; \
-	apt install -y freeswitch-all; \
+	echo "[1] Install packages"; \
+	apt-get update && apt-get upgrade -y && apt-get install -y lsb-release apt-utils aptitude; \
+	apt-get install -y --force-yes ca-certificates wget net-tools sudo ntp curl mc nano htop ssl-cert less gettext vim git ; \
+	
+	wget http://packages.irontec.com/public.key -q -O - | apt-key add -; \
+	wget -O - https://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -; \
+	echo 'deb http://packages.irontec.com/debian jessie main' > /etc/apt/sources.list.d/sngrep.list; \
+	echo "deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main" > /etc/apt/sources.list.d/freeswitch.list; \
+	apt-get update; \
+	
+	
+	echo "[2] Install Freeswitch"; \
+	apt-get install -y --force-yes supervisor memcached haveged ghostscript libtiff-tools libtiff5-dev freeswitch-meta-all freeswitch-all freeswitch-all-dbg freeswitch-meta-bare ntp freeswitch-mod-commands freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-sofia-dbg freeswitch-dbg freeswitch-mod-shout freeswitch-mod-sms-dbg freeswitch-mod-imagick freeswitch-mod-skypopen-dbg freeswitch-music-default gdb libyuv-dev sngrep lame postgresql nginx php5 php5-fpm php5-pgsql apt-transport-https dbus at; \
 	
 	echo "[3] Setup"; \
 	mkdir -p /data; \
@@ -57,4 +70,4 @@ RUN cd ~; \
 	
 	
 VOLUME ["/data"]
-CMD ["/src/install/run.sh"]		
+CMD ["/src/install/run.sh"]	

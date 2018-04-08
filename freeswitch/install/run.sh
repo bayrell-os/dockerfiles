@@ -23,6 +23,8 @@ function install {
 	
 	cd /tmp
 	#sudo -u postgres /usr/pgsql-9.4/bin/initdb -D /var/lib/pgsql/9.4/data
+	mkdir -p /var/run/postgresql/9.4-main.pg_stat_tmp
+	chown -R postgres:postgres /var/run/postgresql/9.4-main.pg_stat_tmp
 	
 	echo "Run supervisor"
 	/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
@@ -105,6 +107,8 @@ function finish {
 
 
 function run {
+	mkdir -p /var/run/postgresql/9.4-main.pg_stat_tmp
+	chown -R postgres:postgres /var/run/postgresql/9.4-main.pg_stat_tmp
 	/usr/bin/supervisord -c /etc/supervisor/supervisord.conf
 }
 
