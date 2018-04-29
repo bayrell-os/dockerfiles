@@ -5,6 +5,6 @@ COPY root/run.sh /root/run.sh
 RUN cd ~; \
 	export DEBIAN_FRONTEND=noninteractive; \
 	apt update; \
-	apt install net-tools iproute curl mc nano less dnsutils -y
+	apt install net-tools iproute curl mc nano less dnsutils iputils-ping -y
 
 CMD ["/root/run.sh"]
