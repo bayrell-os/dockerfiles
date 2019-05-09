@@ -41,7 +41,7 @@ function install {
 	sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE freeswitch to freeswitch"
 	sudo -u postgres psql -c "ALTER USER fusionpbx WITH PASSWORD '$PSQL_PASSWORD';"
 	sudo -u postgres psql -c "ALTER USER freeswitch WITH PASSWORD '$PSQL_PASSWORD';"
-	
+	sudo -u postgres psql -c "CREATE ROLE \"www-data\" WITH SUPERUSER LOGIN PASSWORD '$PSQL_PASSWORD';"
 	
 	echo "NO DELETE THIS FILE" > /data/installed.nodelete
 	echo "IF THIS FILE DOES NOT EXISTS THE SYSTEM WILL BE REINSTALLED AND ALL DATA LOST" >> /data/installed.nodelete
