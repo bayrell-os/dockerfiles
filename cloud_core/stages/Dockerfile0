@@ -3,6 +3,17 @@ FROM bayrell/centos7_php71
 ADD files/root /root
 
 RUN cd ~; \
+	sed -i "s|php_value\[session\.save_handler\].*|php_value[session.save_handler] = memcached|g" /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	sed -i "s|php_value\[session\.save_path\].*|php_value[session.save_path] = "memcached:11211"|g" /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	sed -i "s|php_admin_value[error_log] =.*|php_admin_value[error_log] = /dev/stderr|g" /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'php_value[session.gc_maxlifetime] = "172800"' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[NODE_ID] = $NODE_ID' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[TASK_ID] = $TASK_ID' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[HOSTNAME] = $HOSTNAME' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[SERVICE_ID] = $SERVICE_ID' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[SERVICE_NAME] = $SERVICE_NAME' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[SERVICE_TAGS] = $SERVICE_TAGS' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
+	echo 'env[MAIN_CLASS] = $MAIN_CLASS' >> /etc/opt/remi/php71/php-fpm.d/www.conf; \
 	chmod +x /root/assets.sh; \
 	chmod +x /root/consul.sh; \
 	chmod +x /root/run.sh; \
