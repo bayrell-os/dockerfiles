@@ -1,0 +1,7 @@
+FROM bayrell/centos7_repos:stage_os_install
+
+RUN cd ~; \
+	echo "[1] Install core components"; \
+	yum update -y; \
+	yum install -y mc nano supervisor less net-tools bind-utils; \
+	echo "Ok"

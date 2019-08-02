@@ -1,0 +1,8 @@
+[program:consul-template]
+command=/usr/sbin/consul-template -config=/etc/consul-template.conf
+stopsignal=INT
+priority=1000
+autostart=true
+autorestart=true
+stdout_events_enabled=true
+stderr_events_enabled=true

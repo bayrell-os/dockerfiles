@@ -1,0 +1,13 @@
+FROM bayrell/cloud_core:latest
+
+ADD files/app /var/www/app
+ADD files/etc /etc
+ADD files/root /root
+
+RUN cd ~; \
+	chmod +x /root/consul.sh; \
+	chmod +x /root/run.sh; \
+	echo "Ok"
+
+EXPOSE 80
+CMD ["/root/run.sh"]

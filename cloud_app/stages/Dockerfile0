@@ -1,0 +1,15 @@
+FROM bayrell/centos7_php71
+
+ADD files/app /var/www/app
+ADD files/etc/nginx/sites-enabled /etc/nginx/sites-enabled
+ADD files/root /root
+
+RUN cd ~; \
+	npm install -g bayrell-lang-compiler; \
+	chmod +x /root/assets.sh; \
+	chmod +x /root/consul.sh; \
+	chmod +x /root/run.sh; \
+	echo "Ok"
+
+EXPOSE 80
+CMD ["/root/run.sh"]

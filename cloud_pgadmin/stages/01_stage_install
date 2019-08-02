@@ -1,0 +1,10 @@
+FROM bayrell/cloud_core
+
+ADD downloads /src/downloads
+
+RUN cd ~; \
+	yum install -y nginx python34 python34-devel python34-pip gcc; \
+	pip3.4 install --upgrade pip; \
+	pip3.4 install /src/downloads/pgadmin4-4.11-py2.py3-none-any.whl; \
+	pip3.4 install uwsgi; \
+	echo "Ok"

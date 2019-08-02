@@ -1,0 +1,12 @@
+FROM bayrell/centos7_php71
+
+ADD files/root /root
+
+RUN cd ~; \
+	chmod +x /root/assets.sh; \
+	chmod +x /root/consul.sh; \
+	chmod +x /root/run.sh; \
+	echo "Ok"
+
+EXPOSE 80
+CMD ["/root/run.sh"]
