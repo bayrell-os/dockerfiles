@@ -39,7 +39,7 @@ while [ 1 ]; do
 		},
 		\"Check\": {
 			\"DeregisterCriticalServiceAfter\": \"1m\",
-			\"TTL\": \"16s\",
+			\"TTL\": \"15s\",
 			\"Status\": \"passing\"
 		}
 	}"
@@ -50,5 +50,5 @@ while [ 1 ]; do
 	curl -H "Content-Type: application/json" -X PUT http://${CONSUL_IP}/v1/agent/check/pass/service:${HOSTNAME}
 	
 	echo "Ok"
-	sleep 5
+	sleep 1
 done

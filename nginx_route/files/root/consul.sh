@@ -39,7 +39,7 @@ while [ 1 ]; do
 		},
 		\"Check\": {
 			\"DeregisterCriticalServiceAfter\": \"1m\",
-			\"TTL\": \"16s\",
+			\"TTL\": \"15s\",
 			\"Status\": \"passing\"
 		}
 	}"
@@ -53,5 +53,5 @@ while [ 1 ]; do
 	/usr/bin/php /root/watch.php
 	
 	echo "Ok"
-	sleep 5
+	sleep 1
 done
