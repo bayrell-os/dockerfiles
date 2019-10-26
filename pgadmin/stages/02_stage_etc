@@ -1,0 +1,16 @@
+FROM bayrell/pgadmin:stage_install
+
+ADD files/etc /etc
+ADD files/root /root
+ADD files/html /var/www/html
+
+RUN cd ~; \
+	cp /root/config_local.py /usr/lib/python3.4/site-packages/pgadmin4; \
+	mkdir /var/lib/pgadmin; \
+	chown apache:apache /var/lib/pgadmin; \
+	touch /var/run/pgadmin.pid; \
+	chown apache:apache /var/run/pgadmin.pid; \
+	chmod +x /root/run.sh; \
+	echo "Ok"
+
+CMD ["/root/run.sh"]

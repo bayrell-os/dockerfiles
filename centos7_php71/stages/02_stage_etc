@@ -1,8 +1,8 @@
 FROM bayrell/centos7_php71:stage_packages
 
 ADD files/etc /etc
-ADD files/app /var/www/app
 ADD files/root /root
+ADD files/html /var/www/html
 
 RUN cd ~; \
 	echo "[1] Settings PHP"; \

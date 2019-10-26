@@ -1,0 +1,11 @@
+FROM bayrell/centos7_php71:stage_etc
+
+ADD download /src/download
+
+RUN cd ~; \
+	yum install -y python34 python34-devel python34-pip gcc; \
+	pip3.4 install --upgrade pip; \
+	pip3.4 install /src/download/pgadmin4-4.14-py2.py3-none-any.whl; \
+	pip3.4 install uwsgi; \
+	rm /src/download/pgadmin4-4.14-py2.py3-none-any.whl; \
+	echo "Ok"
