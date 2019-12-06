@@ -2,7 +2,10 @@ FROM bayrell/centos7_repos:latest
 
 RUN cd ~; \
 	echo "[1] Install packages"; \
-	yum install -y nginx nodejs yarn php71 php71-php-fpm php71-php-mbstring php71-php-pecl-memcached php71-php-intl php71-php-opcache php71-php-pdo php71-php-pgsql php71-php-mysqlnd php71-php-gd php71-php-json php71-php-xml php71-php-pecl-zip php71-php-pecl-mongodb php71-php-pecl-mysql php71-php-tarantool php71-php-soap; \
+	curl -sL https://rpm.nodesource.com/setup_10.x | bash -; \
+	rpm --import /etc/pki/rpm-gpg/NODESOURCE-GPG-SIGNING-KEY-EL; \
+	yum install -y nginx nodejs php71 php71-php-fpm php71-php-mbstring php71-php-pecl-memcached php71-php-intl php71-php-opcache php71-php-pdo php71-php-pgsql php71-php-mysqlnd php71-php-gd php71-php-json php71-php-xml php71-php-pecl-zip php71-php-pecl-mongodb php71-php-pecl-mysql php71-php-tarantool php71-php-soap; \
+	php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && php -r "if (hash_file('sha384', 'composer-setup.php') === 'a5c698ffe4b8e849a443b120cd5ba38043260d5c4023dbf93e1558871f1f07f58274fc6f4c93bcfd858c6bd0775cd8d1') { echo 'Installer verified'; exit(0); } else { echo 'Installer corrupt'; unlink('composer-setup.php'); exit(-1); } echo PHP_EOL;" && php composer-setup.php && php -r "unlink('composer-setup.php');" && mv ~/composer.phar /usr/bin/composer; \
 	yum clean all; \
 	ln -s /usr/bin/php71 /usr/bin/php; \
 	ln -s /usr/bin/php71-cgi /usr/bin/php-cgi; \
