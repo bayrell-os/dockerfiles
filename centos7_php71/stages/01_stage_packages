@@ -1,8 +1,0 @@
-FROM bayrell/centos7_repos:stage_os_update
-
-RUN cd ~; \
-	echo "[1] Install packages"; \
-	yum install -y nginx nodejs yarn php71 php71-php-fpm php71-php-mbstring php71-php-pecl-memcached php71-php-intl php71-php-opcache php71-php-pdo php71-php-pgsql php71-php-mysqlnd php71-php-gd php71-php-json php71-php-xml php71-php-pecl-zip; \
-	ln -s /usr/bin/php71 /usr/bin/php; \
-	ln -s /usr/bin/php71-cgi /usr/bin/php-cgi; \
-	echo "Ok"

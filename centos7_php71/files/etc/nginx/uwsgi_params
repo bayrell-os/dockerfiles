@@ -18,4 +18,4 @@ uwsgi_param  REMOTE_PORT        $http_x_forwarded_port;
 uwsgi_param  SERVER_ADDR        $server_addr;
 uwsgi_param  SERVER_PORT        $server_port;
 uwsgi_param  SERVER_NAME        $server_name;
-uwsgi_param  HTTP_HOST          $host;
+uwsgi_param  HTTP_HOST          $host; 
