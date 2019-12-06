@@ -5,6 +5,7 @@ SCRIPT_PATH=`dirname $SCRIPT`
 BASE_PATH=`dirname $SCRIPT_PATH`
 
 RETVAL=0
+TAG=`date '+%Y%m%d_%H%M%S'`
 
 case "$1" in
 	
@@ -15,6 +16,7 @@ case "$1" in
 
 	stage_os_update)
 		docker build ./ -t bayrell/centos7_repos:stage_os_update --file stages/02_stage_os_update
+		docker tag bayrell/centos7_repos:stage_os_update bayrell/centos7_repos:$TAG
 		docker tag bayrell/centos7_repos:stage_os_update bayrell/centos7_repos:latest
 		cd ..
 	;;

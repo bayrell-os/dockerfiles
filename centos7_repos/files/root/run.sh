@@ -4,7 +4,7 @@ export EDITOR=nano
 
 # Run scripts
 if [ -d /root/run.d ]; then
-  for i in /etc/run.d/*.sh; do
+  for i in /root/run.d/*.sh; do
     if [ -r $i ]; then
       . $i
     fi

@@ -10,6 +10,17 @@ RUN cd ~; \
 	yum install epel-release wget deltarpm -y; \
 	echo "[3] Install remi repository"; \
 	rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm; \
+	yum clean all; \
 	echo "Ok"
+
+RUN cd ~; \
+	echo "[4] Generate locales"; \
+	localedef -i en_US -f UTF-8 en_US.UTF-8; \
+	echo 'LANG="en_US.UTF-8"' > /etc/profile.d/locale.sh; \
+	echo 'LANGUAGE="en_US:en"' >> /etc/profile.d/locale.sh; \
+	echo 'export LANG' >> /etc/profile.d/locale.sh; \
+	echo 'export LANGUAGE' >> /etc/profile.d/locale.sh; \
+	echo 'export EDITOR=nano' > /etc/profile.d/editor.sh; \
+	echo "OK"
 
 CMD ["bash"]

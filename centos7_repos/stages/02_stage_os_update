@@ -3,5 +3,15 @@ FROM bayrell/centos7_repos:stage_os_install
 RUN cd ~; \
 	echo "[1] Install core components"; \
 	yum update -y; \
-	yum install -y mc nano supervisor less net-tools bind-utils; \
+	yum install mc nano less man net-tools supervisor htop screen tmux zip unzip pv yum-utils -y; \
+	yum clean all; \
 	echo "Ok"
+
+ADD files /src/files
+RUN cd ~; \
+	mkdir -p /data; \
+	cp -rf /src/files/root/* /root/; \
+	chmod +x /root/run.sh; \
+	echo "Ok"
+
+CMD ["/root/run.sh"]
