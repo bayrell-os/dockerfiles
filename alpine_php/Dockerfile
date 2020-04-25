@@ -2,7 +2,7 @@ FROM bayrell/alpine:latest
 
 RUN cd ~; \
 	apk update; \
-	apk add php php7-fpm nginx; \
+	apk add php7 php7-fpm php7-json php7-mbstring php7-openssl nginx; \
 	rm -rf /var/cache/apk/*; \
 	addgroup -g 800 -S www; \
 	adduser -D -H -S -G www -u 800 www; \
