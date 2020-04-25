@@ -1,0 +1,18 @@
+set $server_ip $server_addr;
+set $the_http_x_forwarded_proto $scheme;
+set $the_http_x_forwarded_for "${http_x_forwarded_for}, ${http_x_forwarded_ip}, ${server_ip}";
+if ($http_x_forwarded_ip = ""){
+	set $the_http_x_forwarded_for "${http_x_forwarded_for}, ${server_ip}";
+}
+if ($http_x_forwarded_proto = "https"){
+	set $the_http_x_forwarded_proto "https";
+}
+if ($http_x_forwarded_for = ""){
+	set $the_http_x_forwarded_for "$proxy_add_x_forwarded_for, ${server_ip}";
+}
+proxy_set_header  HOST               $host;
+proxy_set_header  Referer            $http_referer;
+proxy_set_header  X-Real-IP          $remote_addr;
+proxy_set_header  X-Forwarded-For    $the_http_x_forwarded_for;
+proxy_set_header  X-Forwarded-IP     $server_ip;
+proxy_set_header  X-Forwarded-Proto  $the_http_x_forwarded_proto;
