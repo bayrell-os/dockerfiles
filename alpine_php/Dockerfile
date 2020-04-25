@@ -3,6 +3,7 @@ FROM bayrell/alpine:latest
 RUN cd ~; \
 	apk update; \
 	apk add php php7-fpm nginx; \
+	rm -rf /var/cache/apk/*; \
 	addgroup -g 800 -S www; \
 	adduser -D -H -S -G www -u 800 www; \
 	adduser nginx www; \
